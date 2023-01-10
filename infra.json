@@ -5,41 +5,15 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "14435840343393353617"
+      "templateHash": "5119074308296847950"
     }
   },
   "parameters": {
-    "appName": {
-      "type": "string",
-      "defaultValue": "[format('defender-for-vm-analyzer-{0}', uniqueString(resourceGroup().id))]",
-      "metadata": {
-        "description": "The name of the function app that you wish to create."
-      }
-    },
-    "storageAccountType": {
-      "type": "string",
-      "defaultValue": "Standard_LRS",
-      "allowedValues": [
-        "Standard_LRS",
-        "Standard_GRS",
-        "Standard_RAGRS"
-      ],
-      "metadata": {
-        "description": "Storage Account type"
-      }
-    },
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
       "metadata": {
         "description": "Location for all resources."
-      }
-    },
-    "appInsightsLocation": {
-      "type": "string",
-      "defaultValue": "[resourceGroup().location]",
-      "metadata": {
-        "description": "Location for Application Insights"
       }
     },
     "runtime": {
@@ -56,9 +30,10 @@
     }
   },
   "variables": {
-    "functionAppName": "[parameters('appName')]",
-    "hostingPlanName": "[parameters('appName')]",
-    "applicationInsightsName": "[parameters('appName')]",
+    "appName": "[format('defender-for-vm-analyzer-{0}', uniqueString(resourceGroup().id))]",
+    "functionAppName": "[variables('appName')]",
+    "hostingPlanName": "[variables('appName')]",
+    "applicationInsightsName": "[variables('appName')]",
     "storageAccountName": "[format('{0}azfunctions', uniqueString(resourceGroup().id))]",
     "functionWorkerRuntime": "[parameters('runtime')]"
   },
@@ -69,7 +44,7 @@
       "name": "[variables('storageAccountName')]",
       "location": "[parameters('location')]",
       "sku": {
-        "name": "[parameters('storageAccountType')]"
+        "name": "Standard_LRS"
       },
       "kind": "Storage"
     },
@@ -141,7 +116,7 @@
       "type": "Microsoft.Insights/components",
       "apiVersion": "2020-02-02",
       "name": "[variables('applicationInsightsName')]",
-      "location": "[parameters('appInsightsLocation')]",
+      "location": "[parameters('location')]",
       "kind": "web",
       "properties": {
         "Application_Type": "web",

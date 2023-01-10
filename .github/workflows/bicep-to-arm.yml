@@ -13,24 +13,15 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: 14
-
-    - name: Install Bicep
-      run: |
-        npm install -g @azure/bicep
-
     - name: Generate ARM template
-      run: |
-        bicep build $GITHUB_WORKSPACE/infra.bicep
-      env:
-        ARM_TEMPLATE_FILE: $GITHUB_WORKSPACE/arm_deploy.json
+      uses: Azure/bicep-build-action@v1.0.0
+      with:
+        bicepFilePath: infra.bicep
+        outputFilePath: arm_deploy.json
 
     - name: Commit and push ARM template
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: 'Autogenerate ARM template'
-        add_files: '$GITHUB_WORKSPACE/arm_deploy.json'
+        add_files: 'arm_deploy.json'
         push: true

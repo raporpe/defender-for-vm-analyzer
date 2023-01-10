@@ -14,7 +14,7 @@ param location string = resourceGroup().location
 var appName = 'defender-for-vm-analyzer-${uniqueString(resourceGroup().id)}'
 var functionAppName = appName
 var hostingPlanName = appName
-var applicationInsightsName = appName
+var logAnalyticsName = appName
 var storageAccountName = '${uniqueString(resourceGroup().id)}azfunctions'
 var functionWorkerRuntime = 'python'
 
@@ -70,10 +70,6 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
           value: '~10'
         }
         {
-          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          value: applicationInsights.properties.InstrumentationKey
-        }
-        {
           name: 'FUNCTIONS_WORKER_RUNTIME'
           value: functionWorkerRuntime
         }
@@ -85,12 +81,9 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
   }
 }
 
-resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: applicationInsightsName
+
+
+resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
+  name: logAnalyticsName
   location: location
-  kind: 'web'
-  properties: {
-    Application_Type: 'web'
-    Request_Source: 'rest'
-  }
 }

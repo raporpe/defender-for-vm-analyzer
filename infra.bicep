@@ -11,20 +11,12 @@ targetScope = 'resourceGroup'
 @description('Location for all resources.')
 param location string = resourceGroup().location
 
-@description('The language worker runtime to load in the function app.')
-@allowed([
-  'node'
-  'dotnet'
-  'java'
-])
-param runtime string = 'node'
-
 var appName = 'defender-for-vm-analyzer-${uniqueString(resourceGroup().id)}'
 var functionAppName = appName
 var hostingPlanName = appName
 var applicationInsightsName = appName
 var storageAccountName = '${uniqueString(resourceGroup().id)}azfunctions'
-var functionWorkerRuntime = runtime
+var functionWorkerRuntime = 'python'
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
   name: storageAccountName

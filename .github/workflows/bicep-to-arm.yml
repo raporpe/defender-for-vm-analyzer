@@ -17,11 +17,11 @@ jobs:
       uses: Azure/bicep-build-action@v1.0.0
       with:
         bicepFilePath: infra.bicep
-        outputFilePath: arm_deploy.json
+        outputFilePath: infra.json
 
     - name: Commit and push ARM template
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: 'Autogenerate ARM template'
-        add_files: 'arm_deploy.json'
+        add_files: 'infra.json'
         push: true

@@ -45,6 +45,14 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
           name: 'FUNCTIONS_WORKER_RUNTIME'
           value: functionWorkerRuntime
         }
+        {
+          name: 'APP_REGISTRATION_SECRET_ID'
+          value: 'enter your secret id here'
+        }
+        {
+          name: 'APP_REGISTRATION_SECRET'
+          value: 'enter your secret key here'
+        }
       ]
       ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'

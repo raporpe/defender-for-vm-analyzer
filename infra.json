@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "880550317015011938"
+      "templateHash": "3679007644724599833"
     }
   },
   "parameters": {
@@ -21,7 +21,7 @@
     "appName": "[format('defender-for-vm-analyzer-{0}', uniqueString(resourceGroup().id))]",
     "functionAppName": "[variables('appName')]",
     "hostingPlanName": "[variables('appName')]",
-    "applicationInsightsName": "[variables('appName')]",
+    "logAnalyticsName": "[variables('appName')]",
     "storageAccountName": "[format('{0}azfunctions', uniqueString(resourceGroup().id))]",
     "functionWorkerRuntime": "python"
   },
@@ -81,10 +81,6 @@
               "value": "~10"
             },
             {
-              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-              "value": "[reference(resourceId('Microsoft.Insights/components', variables('applicationInsightsName')), '2020-02-02').InstrumentationKey]"
-            },
-            {
               "name": "FUNCTIONS_WORKER_RUNTIME",
               "value": "[variables('functionWorkerRuntime')]"
             }
@@ -95,21 +91,15 @@
         "httpsOnly": true
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Insights/components', variables('applicationInsightsName'))]",
         "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
       ]
     },
     {
-      "type": "Microsoft.Insights/components",
-      "apiVersion": "2020-02-02",
-      "name": "[variables('applicationInsightsName')]",
-      "location": "[parameters('location')]",
-      "kind": "web",
-      "properties": {
-        "Application_Type": "web",
-        "Request_Source": "rest"
-      }
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "apiVersion": "2022-10-01",
+      "name": "[variables('logAnalyticsName')]",
+      "location": "[parameters('location')]"
     }
   ]
 }

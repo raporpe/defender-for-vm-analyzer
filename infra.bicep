@@ -83,3 +83,14 @@ resource graphApiRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04
     roleDefinitionId: 'acdd72a7-3385-48ef-bd42-f606fba81ae7'
   }
 }
+
+
+resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: appName
+  location: location
+  kind: 'web'
+  properties: {
+    Application_Type: 'web'
+    WorkspaceResourceId: logAnalytics.id
+  }
+}

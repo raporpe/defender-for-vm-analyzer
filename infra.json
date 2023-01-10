@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "5119074308296847950"
+      "templateHash": "880550317015011938"
     }
   },
   "parameters": {
@@ -15,18 +15,6 @@
       "metadata": {
         "description": "Location for all resources."
       }
-    },
-    "runtime": {
-      "type": "string",
-      "defaultValue": "node",
-      "allowedValues": [
-        "node",
-        "dotnet",
-        "java"
-      ],
-      "metadata": {
-        "description": "The language worker runtime to load in the function app."
-      }
     }
   },
   "variables": {
@@ -35,7 +23,7 @@
     "hostingPlanName": "[variables('appName')]",
     "applicationInsightsName": "[variables('appName')]",
     "storageAccountName": "[format('{0}azfunctions', uniqueString(resourceGroup().id))]",
-    "functionWorkerRuntime": "[parameters('runtime')]"
+    "functionWorkerRuntime": "python"
   },
   "resources": [
     {

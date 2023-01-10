@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "9860812145112443053"
+      "templateHash": "2387149684152891959"
     }
   },
   "parameters": {
@@ -53,6 +53,14 @@
             {
               "name": "FUNCTIONS_WORKER_RUNTIME",
               "value": "[variables('functionWorkerRuntime')]"
+            },
+            {
+              "name": "APP_REGISTRATION_SECRET_ID",
+              "value": "enter your secret id here"
+            },
+            {
+              "name": "APP_REGISTRATION_SECRET",
+              "value": "enter your secret key here"
             }
           ],
           "ftpsState": "FtpsOnly",

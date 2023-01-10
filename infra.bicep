@@ -44,6 +44,7 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
       '${functionAppIdentity.id}': {}
     }
   }
+  
   properties: {
     serverFarmId: hostingPlan.id
     siteConfig: {
@@ -59,6 +60,10 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
         {
           name: 'APP_REGISTRATION_SECRET'
           value: 'enter your secret key here'
+        }
+        {
+          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+          value: applicationInsights.properties.InstrumentationKey
         }
       ]
       ftpsState: 'FtpsOnly'
@@ -79,13 +84,13 @@ resource graphApiRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04
   name: roleAssignmentGUID
   scope: tenant()
   properties: {
-    principalId: functionAppIdentity.id
+    principalId: functionAppIdentity.properties.principalId
     roleDefinitionId: 'acdd72a7-3385-48ef-bd42-f606fba81ae7'
   }
 }
 
 
-resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
+resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: appName
   location: location
   kind: 'web'

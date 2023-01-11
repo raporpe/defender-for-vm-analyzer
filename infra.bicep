@@ -66,6 +66,7 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
           name: 'AzureWebJobsStorage'
           value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
         }
+        //        DefaultEndpointsProtocol=https;AccountName=azureforvmanalyzert8c06;AccountKey=LbKFMYRRQqzHivsphtPsT89lKpi7kEJ//PgWlNT2mgy2ilBfmiXAs8SrzBA5MuyUadkZol0mPRVj+AStSBn3dQ==;EndpointSuffix=core.windows.net
         {
           name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
           value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
@@ -117,6 +118,16 @@ resource graphApiRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04
   ]
 }
 
+
+resource symbolicname 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = {
+  name: 'web'
+  kind: 'web'
+  parent: functionApp
+  properties: {
+    branch: 'main'
+    repoUrl: 'https://github.com/raporpe/defender-for-vm-analyzer'
+  }
+}
 
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: appName

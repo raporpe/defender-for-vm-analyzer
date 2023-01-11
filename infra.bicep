@@ -43,7 +43,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
   kind: 'StorageV2'
 }
 
-resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
+resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
   name: functionAppName
   location: location
   kind: 'functionapp'
@@ -53,6 +53,7 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
       '${functionAppIdentity.id}': {}
     }
   }
+
 
   dependsOn: [ storageAccount ]
   
@@ -118,10 +119,10 @@ resource graphApiRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04
 }
 
 
-resource symbolicname 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = {
+resource githubRepositoryFunctionCode 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = {
   name: 'web'
-  kind: 'web'
   parent: functionApp
+
   properties: {
     branch: 'main'
     repoUrl: 'https://github.com/raporpe/defender-for-vm-analyzer'

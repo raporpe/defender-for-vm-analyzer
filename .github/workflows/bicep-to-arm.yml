@@ -6,7 +6,7 @@ on:
       - '**/*.bicep'
 
 jobs:
-  generate-template:
+  bicep-to-arm:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,3 +25,4 @@ jobs:
         commit_message: 'Autogenerate ARM template'
         add_files: 'infra.json'
         push: true
+

@@ -16,6 +16,7 @@ var appName = 'defender-for-vm-analyzer-${uniqueString(resourceGroup().id)}'
 var functionAppName = appName
 var hostingPlanName = appName
 var logAnalyticsName = appName
+var packageURL = 'https://github.com/raporpe/defender-for-vm-analyzer/archive/refs/heads/main.zip'
 
 
 // The hosting for the function that will gather all the information
@@ -25,8 +26,12 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2021-03-01' = {
   sku: {
     name: 'Y1'
     tier: 'Dynamic'
+    size: 'Y1'
+    family: 'Y'
+    capacity: 0
   }
   properties: {
+    reserved: true
   }
 }
 
@@ -55,9 +60,6 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
     }
   }
 
-
-  dependsOn: [ storageAccount ]
-  
   properties: {
     serverFarmId: hostingPlan.id
     siteConfig: {
@@ -93,6 +95,10 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
           name: 'FUNCTIONS_EXTENSION_VERSION'
           value: '~4'
         }
+        {
+          name: 'WEBSITE_RUN_FROM_PACKAGE'
+          value: packageURL
+        }
       ]
       ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'
@@ -106,8 +112,8 @@ resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
   location: location
 }
 
-var roleAssignmentGUID = '9d33d8ba-2ffb-4709-a19c-ca3394e35aeb'
-
+// var roleAssignmentGUID = '9d33d8ba-2ffb-4709-a19c-ca3394e35aeb'
+// 
 // resource graphApiRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
 //   name: roleAssignmentGUID
 //   scope: tenant()

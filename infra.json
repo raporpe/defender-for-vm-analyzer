@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "1528128272277486589"
+      "templateHash": "13301632000968543193"
     }
   },
   "parameters": {
@@ -111,19 +111,6 @@
       "apiVersion": "2022-10-01",
       "name": "[variables('logAnalyticsName')]",
       "location": "[parameters('location')]"
-    },
-    {
-      "type": "Microsoft.Authorization/roleAssignments",
-      "apiVersion": "2022-04-01",
-      "scope": "/",
-      "name": "[variables('roleAssignmentGUID')]",
-      "properties": {
-        "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-identity', variables('functionAppName'))), '2022-01-31-preview').principalId]",
-        "roleDefinitionId": "acdd72a7-3385-48ef-bd42-f606fba81ae7"
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-identity', variables('functionAppName')))]"
-      ]
     },
     {
       "type": "Microsoft.Web/sites/sourcecontrols",

@@ -11,6 +11,7 @@ targetScope = 'resourceGroup'
 @description('Location for all resources.')
 param location string = resourceGroup().location
 
+var storageAccountName = '${uniqueString(resourceGroup().id)}azfunctions'
 var appName = 'defender-for-vm-analyzer-${uniqueString(resourceGroup().id)}'
 var functionAppName = appName
 var hostingPlanName = appName
@@ -32,6 +33,15 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2021-03-01' = {
 resource functionAppIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-preview' = {
   name: '${functionAppName}-identity'
   location: location
+}
+
+resource storageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
+  name: storageAccountName
+  location: location
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'Storage'
 }
 
 resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
@@ -65,6 +75,26 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
           name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
           value: applicationInsights.properties.InstrumentationKey
         }
+        {
+          name: 'AzureWebJobsStorage'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+        }
+        {
+          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+        }
+        {
+          name: 'WEBSITE_CONTENTSHARE'
+          value: toLower(functionAppName)
+        }
+        {
+          name: 'FUNCTIONS_EXTENSION_VERSION'
+          value: '~2'
+        }
+        {
+          name: 'WEBSITE_NODE_DEFAULT_VERSION'
+          value: '~10'
+        }
       ]
       ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'
@@ -87,6 +117,9 @@ resource graphApiRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04
     principalId: functionAppIdentity.properties.principalId
     roleDefinitionId: 'acdd72a7-3385-48ef-bd42-f606fba81ae7'
   }
+  dependsOn: [
+    functionAppIdentity
+  ]
 }
 
 

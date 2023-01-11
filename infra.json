@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "7928875995583266836"
+      "templateHash": "4955816803825298177"
     }
   },
   "parameters": {
@@ -23,7 +23,6 @@
     "functionAppName": "[variables('appName')]",
     "hostingPlanName": "[variables('appName')]",
     "logAnalyticsName": "[variables('appName')]",
-    "functionWorkerRuntime": "python",
     "roleAssignmentGUID": "9d33d8ba-2ffb-4709-a19c-ca3394e35aeb"
   },
   "resources": [
@@ -71,18 +70,6 @@
         "siteConfig": {
           "appSettings": [
             {
-              "name": "FUNCTIONS_WORKER_RUNTIME",
-              "value": "[variables('functionWorkerRuntime')]"
-            },
-            {
-              "name": "APP_REGISTRATION_SECRET_ID",
-              "value": "enter your secret id here"
-            },
-            {
-              "name": "APP_REGISTRATION_SECRET",
-              "value": "enter your secret key here"
-            },
-            {
               "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
               "value": "[reference(resourceId('Microsoft.Insights/components', variables('appName')), '2020-02-02').InstrumentationKey]"
             },
@@ -95,12 +82,24 @@
               "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('storageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-08-01').keys[0].value)]"
             },
             {
+              "name": "FUNCTIONS_WORKER_RUNTIME",
+              "value": "python"
+            },
+            {
+              "name": "APP_REGISTRATION_SECRET_ID",
+              "value": "enter your secret id here"
+            },
+            {
+              "name": "APP_REGISTRATION_SECRET",
+              "value": "enter your secret key here"
+            },
+            {
               "name": "WEBSITE_CONTENTSHARE",
               "value": "[toLower(variables('functionAppName'))]"
             },
             {
               "name": "FUNCTIONS_EXTENSION_VERSION",
-              "value": "~2"
+              "value": "~4"
             },
             {
               "name": "WEBSITE_NODE_DEFAULT_VERSION",

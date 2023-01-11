@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "6538008025666592897"
+      "templateHash": "18022514575053837138"
     }
   },
   "parameters": {
@@ -23,7 +23,7 @@
     "functionAppName": "[variables('appName')]",
     "hostingPlanName": "[variables('appName')]",
     "logAnalyticsName": "[variables('appName')]",
-    "roleAssignmentGUID": "9d33d8ba-2ffb-4709-a19c-ca3394e35aeb"
+    "packageURL": "https://github.com/raporpe/defender-for-vm-analyzer/archive/refs/heads/main.zip"
   },
   "resources": [
     {
@@ -33,9 +33,14 @@
       "location": "[parameters('location')]",
       "sku": {
         "name": "Y1",
-        "tier": "Dynamic"
+        "tier": "Dynamic",
+        "size": "Y1",
+        "family": "Y",
+        "capacity": 0
       },
-      "properties": {}
+      "properties": {
+        "reserved": true
+      }
     },
     {
       "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
@@ -99,6 +104,10 @@
             {
               "name": "FUNCTIONS_EXTENSION_VERSION",
               "value": "~4"
+            },
+            {
+              "name": "WEBSITE_RUN_FROM_PACKAGE",
+              "value": "[variables('packageURL')]"
             }
           ],
           "ftpsState": "FtpsOnly",

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "4955816803825298177"
+      "templateHash": "139744451417193266"
     }
   },
   "parameters": {
@@ -100,10 +100,6 @@
             {
               "name": "FUNCTIONS_EXTENSION_VERSION",
               "value": "~4"
-            },
-            {
-              "name": "WEBSITE_NODE_DEFAULT_VERSION",
-              "value": "~10"
             }
           ],
           "ftpsState": "FtpsOnly",

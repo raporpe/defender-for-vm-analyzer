@@ -100,14 +100,14 @@ resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
 
 var roleAssignmentGUID = '9d33d8ba-2ffb-4709-a19c-ca3394e35aeb'
 
-resource graphApiRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: roleAssignmentGUID
-  scope: tenant()
-  properties: {
-    principalId: functionAppIdentity.properties.principalId
-    roleDefinitionId: 'acdd72a7-3385-48ef-bd42-f606fba81ae7'
-  }
-}
+// resource graphApiRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+//   name: roleAssignmentGUID
+//   scope: tenant()
+//   properties: {
+//     principalId: functionAppIdentity.properties.principalId
+//     roleDefinitionId: 'acdd72a7-3385-48ef-bd42-f606fba81ae7'
+//   }
+// }
 
 
 resource githubRepositoryFunctionCode 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = {

@@ -113,9 +113,6 @@ resource graphApiRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04
     principalId: functionAppIdentity.properties.principalId
     roleDefinitionId: 'acdd72a7-3385-48ef-bd42-f606fba81ae7'
   }
-  dependsOn: [
-    functionAppIdentity
-  ]
 }
 
 

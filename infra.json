@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "3082671965748246307"
+      "templateHash": "12454997190541154686"
     }
   },
   "parameters": {
@@ -55,7 +55,7 @@
     },
     {
       "type": "Microsoft.Web/sites",
-      "apiVersion": "2021-03-01",
+      "apiVersion": "2022-03-01",
       "name": "[variables('functionAppName')]",
       "location": "[parameters('location')]",
       "kind": "functionapp",
@@ -137,7 +137,6 @@
       "type": "Microsoft.Web/sites/sourcecontrols",
       "apiVersion": "2022-03-01",
       "name": "[format('{0}/{1}', variables('functionAppName'), 'web')]",
-      "kind": "web",
       "properties": {
         "branch": "main",
         "repoUrl": "https://github.com/raporpe/defender-for-vm-analyzer"

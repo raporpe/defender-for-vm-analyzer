@@ -61,6 +61,13 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
   properties: {
     serverFarmId: hostingPlan.id
     siteConfig: {
+      numberOfWorkers: 1
+      linuxFxVersion: 'Python|3.9'
+      acrUseManagedIdentityCreds: false
+      alwaysOn: false
+      http20Enabled: false
+      functionAppScaleLimit: 200
+      minimumElasticInstanceCount: 0
       appSettings: [
         {
           name: 'APPINSIGHTS_INSTRUMENTATIONKEY'

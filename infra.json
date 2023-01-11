@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "2991222772572617262"
+      "templateHash": "7928875995583266836"
     }
   },
   "parameters": {
@@ -18,6 +18,7 @@
     }
   },
   "variables": {
+    "storageAccountName": "[format('{0}azfunctions', uniqueString(resourceGroup().id))]",
     "appName": "[format('defender-for-vm-analyzer-{0}', uniqueString(resourceGroup().id))]",
     "functionAppName": "[variables('appName')]",
     "hostingPlanName": "[variables('appName')]",
@@ -42,6 +43,16 @@
       "apiVersion": "2022-01-31-preview",
       "name": "[format('{0}-identity', variables('functionAppName'))]",
       "location": "[parameters('location')]"
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-08-01",
+      "name": "[variables('storageAccountName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "Storage"
     },
     {
       "type": "Microsoft.Web/sites",
@@ -74,6 +85,26 @@
             {
               "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
               "value": "[reference(resourceId('Microsoft.Insights/components', variables('appName')), '2020-02-02').InstrumentationKey]"
+            },
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('storageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-08-01').keys[0].value)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+              "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('storageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-08-01').keys[0].value)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTSHARE",
+              "value": "[toLower(variables('functionAppName'))]"
+            },
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "~2"
+            },
+            {
+              "name": "WEBSITE_NODE_DEFAULT_VERSION",
+              "value": "~10"
             }
           ],
           "ftpsState": "FtpsOnly",
@@ -84,7 +115,8 @@
       "dependsOn": [
         "[resourceId('Microsoft.Insights/components', variables('appName'))]",
         "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-identity', variables('functionAppName')))]",
-        "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
+        "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
       ]
     },
     {

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "13301632000968543193"
+      "templateHash": "5716354236536934721"
     }
   },
   "parameters": {
@@ -31,6 +31,7 @@
       "apiVersion": "2021-03-01",
       "name": "[variables('hostingPlanName')]",
       "location": "[parameters('location')]",
+      "kind": "linux",
       "sku": {
         "name": "Y1",
         "tier": "Dynamic"

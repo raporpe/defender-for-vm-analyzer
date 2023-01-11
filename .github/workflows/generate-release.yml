@@ -1,4 +1,4 @@
-  name: Build zip and set to release
+name: Build zip and set to release
 
 on: push
 

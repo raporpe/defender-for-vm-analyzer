@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "5716354236536934721"
+      "templateHash": "14476757292881109000"
     }
   },
   "parameters": {
@@ -31,7 +31,6 @@
       "apiVersion": "2021-03-01",
       "name": "[variables('hostingPlanName')]",
       "location": "[parameters('location')]",
-      "kind": "linux",
       "sku": {
         "name": "Y1",
         "tier": "Dynamic"
@@ -59,7 +58,7 @@
       "apiVersion": "2022-03-01",
       "name": "[variables('functionAppName')]",
       "location": "[parameters('location')]",
-      "kind": "functionapp",
+      "kind": "functionapp,linux",
       "identity": {
         "type": "UserAssigned",
         "userAssignedIdentities": {
@@ -118,7 +117,9 @@
       "apiVersion": "2022-03-01",
       "name": "[format('{0}/{1}', variables('functionAppName'), 'web')]",
       "properties": {
+        "isMercurial": false,
         "branch": "main",
+        "isGitHubAction": false,
         "repoUrl": "https://github.com/raporpe/defender-for-vm-analyzer"
       },
       "dependsOn": [

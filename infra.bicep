@@ -99,6 +99,14 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
           name: 'WEBSITE_RUN_FROM_PACKAGE'
           value: packageURL
         }
+        {
+          name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
+          value: 'true'
+        }
+        {
+          name: 'ENABLE_ORYX_BUILD'
+          value: 'true'
+        }
       ]
       ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'
@@ -124,17 +132,17 @@ resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
 // }
 
 
-resource githubRepositoryFunctionCode 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = {
-  name: 'web'
-  parent: functionApp
-
-  properties: {
-    isMercurial: false
-    branch: 'main'
-    isGitHubAction: false
-    repoUrl: 'https://github.com/raporpe/defender-for-vm-analyzer'
-  }
-}
+// resource githubRepositoryFunctionCode 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = {
+//   name: 'web'
+//   parent: functionApp
+// 
+//   properties: {
+//     isMercurial: false
+//     branch: 'main'
+//     isGitHubAction: false
+//     repoUrl: 'https://github.com/raporpe/defender-for-vm-analyzer'
+//   }
+// }
 
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: appName

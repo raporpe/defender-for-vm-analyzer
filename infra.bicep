@@ -16,7 +16,6 @@ var appName = 'defender-for-vm-analyzer-${uniqueString(resourceGroup().id)}'
 var functionAppName = appName
 var hostingPlanName = appName
 var logAnalyticsName = appName
-var functionWorkerRuntime = 'python'
 
 
 // The hosting for the function that will gather all the information
@@ -60,18 +59,6 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
     siteConfig: {
       appSettings: [
         {
-          name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: functionWorkerRuntime
-        }
-        {
-          name: 'APP_REGISTRATION_SECRET_ID'
-          value: 'enter your secret id here'
-        }
-        {
-          name: 'APP_REGISTRATION_SECRET'
-          value: 'enter your secret key here'
-        }
-        {
           name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
           value: applicationInsights.properties.InstrumentationKey
         }
@@ -84,12 +71,24 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
           value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
         }
         {
+          name: 'FUNCTIONS_WORKER_RUNTIME'
+          value: 'python'
+        }
+        {
+          name: 'APP_REGISTRATION_SECRET_ID'
+          value: 'enter your secret id here'
+        }
+        {
+          name: 'APP_REGISTRATION_SECRET'
+          value: 'enter your secret key here'
+        }
+        {
           name: 'WEBSITE_CONTENTSHARE'
           value: toLower(functionAppName)
         }
         {
           name: 'FUNCTIONS_EXTENSION_VERSION'
-          value: '~2'
+          value: '~4'
         }
         {
           name: 'WEBSITE_NODE_DEFAULT_VERSION'

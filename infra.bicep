@@ -40,7 +40,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
   sku: {
     name: 'Standard_LRS'
   }
-  kind: 'Storage'
+  kind: 'StorageV2'
 }
 
 resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
@@ -53,6 +53,8 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
       '${functionAppIdentity.id}': {}
     }
   }
+
+  dependsOn: [ storageAccount ]
   
   properties: {
     serverFarmId: hostingPlan.id

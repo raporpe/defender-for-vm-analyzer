@@ -90,10 +90,6 @@ resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
           name: 'FUNCTIONS_EXTENSION_VERSION'
           value: '~4'
         }
-        {
-          name: 'WEBSITE_NODE_DEFAULT_VERSION'
-          value: '~10'
-        }
       ]
       ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'

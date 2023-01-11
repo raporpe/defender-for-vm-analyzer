@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "7622812148953159406"
+      "templateHash": "2991222772572617262"
     }
   },
   "parameters": {
@@ -70,6 +70,10 @@
             {
               "name": "APP_REGISTRATION_SECRET",
               "value": "enter your secret key here"
+            },
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(resourceId('Microsoft.Insights/components', variables('appName')), '2020-02-02').InstrumentationKey]"
             }
           ],
           "ftpsState": "FtpsOnly",
@@ -78,6 +82,7 @@
         "httpsOnly": true
       },
       "dependsOn": [
+        "[resourceId('Microsoft.Insights/components', variables('appName'))]",
         "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-identity', variables('functionAppName')))]",
         "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
       ]
@@ -94,11 +99,25 @@
       "scope": "/",
       "name": "[variables('roleAssignmentGUID')]",
       "properties": {
-        "principalId": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-identity', variables('functionAppName')))]",
+        "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-identity', variables('functionAppName'))), '2022-01-31-preview').principalId]",
         "roleDefinitionId": "acdd72a7-3385-48ef-bd42-f606fba81ae7"
       },
       "dependsOn": [
         "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-identity', variables('functionAppName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Insights/components",
+      "apiVersion": "2020-02-02",
+      "name": "[variables('appName')]",
+      "location": "[parameters('location')]",
+      "kind": "web",
+      "properties": {
+        "Application_Type": "web",
+        "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsName'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsName'))]"
       ]
     }
   ]

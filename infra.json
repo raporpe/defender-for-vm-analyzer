@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "8076796466026509902"
+      "templateHash": "3082671965748246307"
     }
   },
   "parameters": {
@@ -51,7 +51,7 @@
       "sku": {
         "name": "Standard_LRS"
       },
-      "kind": "Storage"
+      "kind": "StorageV2"
     },
     {
       "type": "Microsoft.Web/sites",

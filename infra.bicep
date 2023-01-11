@@ -22,7 +22,6 @@ var logAnalyticsName = appName
 resource hostingPlan 'Microsoft.Web/serverfarms@2021-03-01' = {
   name: hostingPlanName
   location: location
-  kind: 'linux'
   sku: {
     name: 'Y1'
     tier: 'Dynamic'
@@ -48,7 +47,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
 resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
   name: functionAppName
   location: location
-  kind: 'functionapp'
+  kind: 'functionapp,linux'
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
@@ -117,7 +116,9 @@ resource githubRepositoryFunctionCode 'Microsoft.Web/sites/sourcecontrols@2022-0
   parent: functionApp
 
   properties: {
+    isMercurial: false
     branch: 'main'
+    isGitHubAction: false
     repoUrl: 'https://github.com/raporpe/defender-for-vm-analyzer'
   }
 }

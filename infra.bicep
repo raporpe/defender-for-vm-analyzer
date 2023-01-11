@@ -69,7 +69,6 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
           name: 'AzureWebJobsStorage'
           value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
         }
-        //        DefaultEndpointsProtocol=https;AccountName=azureforvmanalyzert8c06;AccountKey=LbKFMYRRQqzHivsphtPsT89lKpi7kEJ//PgWlNT2mgy2ilBfmiXAs8SrzBA5MuyUadkZol0mPRVj+AStSBn3dQ==;EndpointSuffix=core.windows.net
         {
           name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
           value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
@@ -77,14 +76,6 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
         {
           name: 'FUNCTIONS_WORKER_RUNTIME'
           value: 'python'
-        }
-        {
-          name: 'APP_REGISTRATION_SECRET_ID'
-          value: 'enter your secret id here'
-        }
-        {
-          name: 'APP_REGISTRATION_SECRET'
-          value: 'enter your secret key here'
         }
         {
           name: 'WEBSITE_CONTENTSHARE'

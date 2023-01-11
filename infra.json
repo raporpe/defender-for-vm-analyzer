@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "12454997190541154686"
+      "templateHash": "1528128272277486589"
     }
   },
   "parameters": {
@@ -84,14 +84,6 @@
             {
               "name": "FUNCTIONS_WORKER_RUNTIME",
               "value": "python"
-            },
-            {
-              "name": "APP_REGISTRATION_SECRET_ID",
-              "value": "enter your secret id here"
-            },
-            {
-              "name": "APP_REGISTRATION_SECRET",
-              "value": "enter your secret key here"
             },
             {
               "name": "WEBSITE_CONTENTSHARE",

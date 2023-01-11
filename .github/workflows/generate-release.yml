@@ -1,6 +1,9 @@
 name: Build zip and set to release
 
-on: push
+on: 
+  push:
+    tags:
+    - '*'
 
 env:
   AZURE_FUNCTIONAPP_NAME: defender-for-vm-analyzer # set this to your application's name

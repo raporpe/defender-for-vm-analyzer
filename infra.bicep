@@ -16,7 +16,7 @@ var appName = 'defender-for-vm-analyzer-${uniqueString(resourceGroup().id)}'
 var functionAppName = appName
 var hostingPlanName = appName
 var logAnalyticsName = appName
-var packageURL = 'https://github.com/raporpe/defender-for-vm-analyzer/archive/refs/heads/main.zip'
+var packageURL = 'https://github.com/raporpe/defender-for-vm-analyzer/releases/latest/download/release.zip'
 
 
 // The hosting for the function that will gather all the information
@@ -98,14 +98,6 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
         {
           name: 'WEBSITE_RUN_FROM_PACKAGE'
           value: packageURL
-        }
-        {
-          name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
-          value: 'true'
-        }
-        {
-          name: 'ENABLE_ORYX_BUILD'
-          value: 'true'
         }
       ]
       ftpsState: 'FtpsOnly'

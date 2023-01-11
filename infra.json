@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "369243013648087406"
+      "templateHash": "18192487189895055161"
     }
   },
   "parameters": {
@@ -23,7 +23,7 @@
     "functionAppName": "[variables('appName')]",
     "hostingPlanName": "[variables('appName')]",
     "logAnalyticsName": "[variables('appName')]",
-    "packageURL": "https://github.com/raporpe/defender-for-vm-analyzer/archive/refs/heads/main.zip"
+    "packageURL": "https://github.com/raporpe/defender-for-vm-analyzer/releases/latest/download/release.zip"
   },
   "resources": [
     {
@@ -108,14 +108,6 @@
             {
               "name": "WEBSITE_RUN_FROM_PACKAGE",
               "value": "[variables('packageURL')]"
-            },
-            {
-              "name": "SCM_DO_BUILD_DURING_DEPLOYMENT",
-              "value": "true"
-            },
-            {
-              "name": "ENABLE_ORYX_BUILD",
-              "value": "true"
             }
           ],
           "ftpsState": "FtpsOnly",

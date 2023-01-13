@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "7225809073485380119"
+      "templateHash": "17524119141665289738"
     }
   },
   "parameters": {
@@ -133,9 +133,7 @@
       "apiVersion": "2022-03-01",
       "name": "[format('{0}/{1}', variables('functionAppName'), 'web')]",
       "properties": {
-        "isMercurial": false,
         "branch": "main",
-        "isGitHubAction": false,
         "isManualIntegration": true,
         "repoUrl": "https://github.com/raporpe/defender-for-vm-analyzer"
       },

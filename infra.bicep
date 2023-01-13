@@ -129,9 +129,7 @@ resource githubRepositoryFunctionCode 'Microsoft.Web/sites/sourcecontrols@2022-0
   parent: functionApp
 
   properties: {
-    isMercurial: false
     branch: 'main'
-    isGitHubAction: false
     isManualIntegration: true
     repoUrl: 'https://github.com/raporpe/defender-for-vm-analyzer'
   }

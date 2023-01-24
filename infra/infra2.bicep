@@ -1,11 +1,11 @@
 targetScope = 'resourceGroup'
 
-param resourceGroup object
+param rg object
 param subscription object
 
-var location = resourceGroup.location
-var storageAccountName = '${uniqueString(resourceGroup.id)}azfunctions'
-var appName = 'defender-for-vm-analyzer-${uniqueString(resourceGroup.id)}'
+var location = rg.location
+var storageAccountName = '${uniqueString(rg.resourceId)}azfunctions'
+var appName = 'defender-for-vm-analyzer-${uniqueString(rg.resourceId)}'
 var functionAppName = appName
 var hostingPlanName = appName
 var logAnalyticsName = appName

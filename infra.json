@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "6064307329983720634"
+      "templateHash": "161119621506338721"
     }
   },
   "parameters": {
@@ -14,19 +14,16 @@
       "metadata": {
         "description": "Location for all resources."
       }
-    },
-    "resourceGroupNameAnalyzer": {
-      "type": "string",
-      "metadata": {
-        "description": "The name of the resource group that will keep the analyzer."
-      }
     }
+  },
+  "variables": {
+    "resourceGroupNameAnalyzer": "[format('defender-for-vm-analyzer-{0}', uniqueString(subscription().subscriptionId))]"
   },
   "resources": [
     {
       "type": "Microsoft.Resources/resourceGroups",
       "apiVersion": "2020-06-01",
-      "name": "[parameters('resourceGroupNameAnalyzer')]",
+      "name": "[variables('resourceGroupNameAnalyzer')]",
       "location": "[parameters('location')]"
     },
     {
@@ -46,14 +43,14 @@
     {
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2022-04-01",
-      "name": "[guid(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupNameAnalyzer')))]",
+      "name": "[guid(subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupNameAnalyzer')))]",
       "properties": {
-        "principalId": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupNameAnalyzer')), 'Microsoft.Resources/deployments', 'mainRG'), '2020-10-01').outputs.functionAppIdentityId.value.properties.principalId]",
+        "principalId": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupNameAnalyzer')), 'Microsoft.Resources/deployments', 'mainRG'), '2020-10-01').outputs.functionAppIdentityId.value.properties.principalId]",
         "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'read-vm-info')]"
       },
       "dependsOn": [
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupNameAnalyzer'))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupNameAnalyzer')), 'Microsoft.Resources/deployments', 'mainRG')]",
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupNameAnalyzer'))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupNameAnalyzer')), 'Microsoft.Resources/deployments', 'mainRG')]",
         "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'read-vm-info')]"
       ]
     },
@@ -61,15 +58,15 @@
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "mainRG",
-      "resourceGroup": "[parameters('resourceGroupNameAnalyzer')]",
+      "resourceGroup": "[variables('resourceGroupNameAnalyzer')]",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"
         },
         "mode": "Incremental",
         "parameters": {
-          "resourceGroup": {
-            "value": "[reference(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupNameAnalyzer')), '2020-06-01', 'full')]"
+          "rg": {
+            "value": "[reference(subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupNameAnalyzer')), '2020-06-01', 'full')]"
           },
           "subscription": {
             "value": "[subscription()]"
@@ -82,11 +79,11 @@
             "_generator": {
               "name": "bicep",
               "version": "0.13.1.58284",
-              "templateHash": "10228321513234462677"
+              "templateHash": "4921901050570373701"
             }
           },
           "parameters": {
-            "resourceGroup": {
+            "rg": {
               "type": "object"
             },
             "subscription": {
@@ -94,9 +91,9 @@
             }
           },
           "variables": {
-            "location": "[parameters('resourceGroup').location]",
-            "storageAccountName": "[format('{0}azfunctions', uniqueString(parameters('resourceGroup').id))]",
-            "appName": "[format('defender-for-vm-analyzer-{0}', uniqueString(parameters('resourceGroup').id))]",
+            "location": "[parameters('rg').location]",
+            "storageAccountName": "[format('{0}azfunctions', uniqueString(parameters('rg').resourceId))]",
+            "appName": "[format('defender-for-vm-analyzer-{0}', uniqueString(parameters('rg').resourceId))]",
             "functionAppName": "[variables('appName')]",
             "hostingPlanName": "[variables('appName')]",
             "logAnalyticsName": "[variables('appName')]",
@@ -246,7 +243,7 @@
         }
       },
       "dependsOn": [
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupNameAnalyzer'))]"
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupNameAnalyzer'))]"
       ]
     }
   ]

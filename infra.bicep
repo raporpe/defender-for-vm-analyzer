@@ -99,6 +99,10 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
           name: 'WEBSITE_RUN_FROM_PACKAGE'
           value: packageURL
         }
+        {
+          name: 'SUBSCRIPTION_ID'
+          value: ''
+        }
       ]
       ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'

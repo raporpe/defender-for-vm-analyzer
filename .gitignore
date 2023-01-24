@@ -1,3 +1,6 @@
+# No json files compiled in the infra folder
+infra/*.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

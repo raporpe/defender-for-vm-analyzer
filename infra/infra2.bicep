@@ -1,22 +1,16 @@
 targetScope = 'resourceGroup'
 
-// @description('Name of the resource group')
-// param resourceGroupName string = 'defender-for-vm-analyzer'
-// 
-// resource resourceGroup 'Microsoft.Resources/resourceGroups@2020-06-01' = {
-//   name: resourceGroupName
-//   location: location
-// }
+param resourceGroup object
+param subscription object
 
-@description('Location for all resources.')
-param location string = resourceGroup().location
-
-var storageAccountName = '${uniqueString(resourceGroup().id)}azfunctions'
-var appName = 'defender-for-vm-analyzer-${uniqueString(resourceGroup().id)}'
+var location = resourceGroup.location
+var storageAccountName = '${uniqueString(resourceGroup.id)}azfunctions'
+var appName = 'defender-for-vm-analyzer-${uniqueString(resourceGroup.id)}'
 var functionAppName = appName
 var hostingPlanName = appName
 var logAnalyticsName = appName
 var packageURL = 'https://github.com/raporpe/defender-for-vm-analyzer/releases/latest/download/release.zip'
+
 
 
 // The hosting for the function that will gather all the information
@@ -101,7 +95,7 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
         }
         {
           name: 'SUBSCRIPTION_ID'
-          value: ''
+          value: subscription.subscriptionId
         }
       ]
       ftpsState: 'FtpsOnly'
@@ -111,21 +105,13 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
   }
 }
 
+output functionAppIdentityId object = functionAppIdentity
+
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
   name: logAnalyticsName
   location: location
 }
 
-// var roleAssignmentGUID = '9d33d8ba-2ffb-4709-a19c-ca3394e35aeb'
-// 
-// resource graphApiRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-//   name: roleAssignmentGUID
-//   scope: tenant()
-//   properties: {
-//     principalId: functionAppIdentity.properties.principalId
-//     roleDefinitionId: 'acdd72a7-3385-48ef-bd42-f606fba81ae7'
-//   }
-// }
 
 
 resource githubRepositoryFunctionCode 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = {
@@ -148,3 +134,4 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
     WorkspaceResourceId: logAnalytics.id
   }
 }
+

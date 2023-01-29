@@ -78,25 +78,14 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
           value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
         }
         {
-          name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: 'python'
-        }
-        {
-          name: 'WEBSITE_CONTENTSHARE'
-          value: toLower(functionAppName)
-        }
-        {
           name: 'FUNCTIONS_EXTENSION_VERSION'
           value: '~4'
         }
         {
-          name: 'WEBSITE_RUN_FROM_PACKAGE'
-          value: packageURL
+          name: 'Project'
+          value: 'defender-for-vm-analyzer'
         }
-        {
-          name: 'SUBSCRIPTION_ID'
-          value: subscription.subscriptionId
-        }
+
       ]
       ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'
@@ -107,23 +96,36 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
 
 output functionAppIdentityId object = functionAppIdentity
 
-resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
-  name: logAnalyticsName
-  location: location
-}
 
-
-
-resource githubRepositoryFunctionCode 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = {
-  name: 'web'
+resource config 'Microsoft.Web/sites/config@2022-03-01' = {
   parent: functionApp
-
+  name: 'appsettings'
   properties: {
-    branch: 'main'
-    isManualIntegration: true
-    repoUrl: 'https://github.com/raporpe/defender-for-vm-analyzer'
+    APPINSIGHTS_INSTRUMENTATIONKEY: applicationInsights.properties.InstrumentationKey
+    AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+    WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+    FUNCTIONS_WORKER_RUNTIME: 'python'
+    WEBSITE_CONTENTSHARE: toLower(functionAppName)
+    SUBSCRIPTION_ID: subscription.subscriptionId
+    Project: 'defender-for-vm-analyzer'
+    WEBSITE_RUN_FROM_PACKAGE: packageURL
+    FUNCTIONS_EXTENSION_VERSION: '~4'
+    SCM_DO_BUILD_DURING_DEPLOYMENT: 'true'
   }
+  dependsOn: [
+    // githubRepositoryFunctionCode
+  ]
 }
+
+// resource githubRepositoryFunctionCode 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = {
+//   parent: functionApp
+//   name: 'web'
+//   properties: {
+//     repoUrl: 'https://github.com/raporpe/defender-for-vm-analyzer'
+//     branch: 'main'
+//     isManualIntegration: true
+//   }
+// }
 
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: appName
@@ -135,3 +137,7 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
+resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
+  name: logAnalyticsName
+  location: location
+}

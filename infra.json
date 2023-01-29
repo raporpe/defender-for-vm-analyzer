@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "4289836823150342770"
+      "templateHash": "5996604143410733795"
     }
   },
   "parameters": {
@@ -17,13 +17,13 @@
     }
   },
   "variables": {
-    "resourceGroupNameAnalyzer": "[format('defender-for-vm-analyzer-{0}', uniqueString(subscription().subscriptionId))]"
+    "baseName": "[format('def-vm-analyzer-{0}', substring(uniqueString(subscription().subscriptionId), 0, 5))]"
   },
   "resources": [
     {
       "type": "Microsoft.Resources/resourceGroups",
       "apiVersion": "2020-06-01",
-      "name": "[variables('resourceGroupNameAnalyzer')]",
+      "name": "[variables('baseName')]",
       "location": "[parameters('location')]"
     },
     {
@@ -49,14 +49,14 @@
     {
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2022-04-01",
-      "name": "[guid(subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupNameAnalyzer')))]",
+      "name": "[guid(subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('baseName')))]",
       "properties": {
-        "principalId": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupNameAnalyzer')), 'Microsoft.Resources/deployments', 'mainRG'), '2020-10-01').outputs.functionAppIdentityId.value.properties.principalId]",
+        "principalId": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('baseName')), 'Microsoft.Resources/deployments', 'mainRG'), '2020-10-01').outputs.functionAppIdentityId.value.properties.principalId]",
         "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', guid(tenant().tenantId))]"
       },
       "dependsOn": [
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupNameAnalyzer'))]",
-        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupNameAnalyzer')), 'Microsoft.Resources/deployments', 'mainRG')]",
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('baseName'))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('baseName')), 'Microsoft.Resources/deployments', 'mainRG')]",
         "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', guid(tenant().tenantId))]"
       ]
     },
@@ -64,7 +64,7 @@
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "mainRG",
-      "resourceGroup": "[variables('resourceGroupNameAnalyzer')]",
+      "resourceGroup": "[variables('baseName')]",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"
@@ -72,10 +72,13 @@
         "mode": "Incremental",
         "parameters": {
           "rg": {
-            "value": "[reference(subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupNameAnalyzer')), '2020-06-01', 'full')]"
+            "value": "[reference(subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('baseName')), '2020-06-01', 'full')]"
           },
           "subscription": {
             "value": "[subscription()]"
+          },
+          "baseName": {
+            "value": "[variables('baseName')]"
           }
         },
         "template": {
@@ -85,7 +88,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.13.1.58284",
-              "templateHash": "2918170597523885287"
+              "templateHash": "2760243050106100785"
             }
           },
           "parameters": {
@@ -94,16 +97,19 @@
             },
             "subscription": {
               "type": "object"
+            },
+            "baseName": {
+              "type": "string"
             }
           },
           "variables": {
             "location": "[parameters('rg').location]",
             "storageAccountName": "[format('analyzer{0}', uniqueString(parameters('rg').resourceId))]",
-            "appName": "[format('def-vm-analyzer-{0}', substring(uniqueString(parameters('rg').resourceId), 0, 5))]",
-            "functionAppName": "[format('{0}-func', variables('appName'))]",
-            "hostingPlanName": "[format('{0}-hostingplan', variables('appName'))]",
-            "logAnalyticsName": "[format('{0}-loganalytics', variables('appName'))]",
-            "managedIdentityName": "[format('{0}-identity', variables('appName'))]",
+            "functionAppName": "[format('{0}-func', parameters('baseName'))]",
+            "hostingPlanName": "[format('{0}-hostingplan', parameters('baseName'))]",
+            "logAnalyticsName": "[format('{0}-loganalytics', parameters('baseName'))]",
+            "managedIdentityName": "[format('{0}-identity', parameters('baseName'))]",
+            "appInsightsName": "[format('{0}-appinsights', parameters('baseName'))]",
             "packageURL": "https://github.com/raporpe/defender-for-vm-analyzer/releases/latest/download/release.zip"
           },
           "resources": [
@@ -164,7 +170,7 @@
                   "appSettings": [
                     {
                       "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                      "value": "[reference(resourceId('Microsoft.Insights/components', variables('appName')), '2020-02-02').InstrumentationKey]"
+                      "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2020-02-02').InstrumentationKey]"
                     },
                     {
                       "name": "AzureWebJobsStorage",
@@ -189,7 +195,7 @@
                 "httpsOnly": true
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Insights/components', variables('appName'))]",
+                "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",
                 "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityName'))]",
                 "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
@@ -200,7 +206,7 @@
               "apiVersion": "2022-03-01",
               "name": "[format('{0}/{1}', variables('functionAppName'), 'appsettings')]",
               "properties": {
-                "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.Insights/components', variables('appName')), '2020-02-02').InstrumentationKey]",
+                "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2020-02-02').InstrumentationKey]",
                 "AzureWebJobsStorage": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('storageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-08-01').keys[0].value)]",
                 "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('storageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-08-01').keys[0].value)]",
                 "FUNCTIONS_WORKER_RUNTIME": "python",
@@ -210,7 +216,7 @@
                 "FUNCTIONS_EXTENSION_VERSION": "~4"
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Insights/components', variables('appName'))]",
+                "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",
                 "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
               ]
@@ -218,7 +224,7 @@
             {
               "type": "Microsoft.Insights/components",
               "apiVersion": "2020-02-02",
-              "name": "[variables('appName')]",
+              "name": "[variables('appInsightsName')]",
               "location": "[variables('location')]",
               "kind": "web",
               "properties": {
@@ -245,7 +251,7 @@
         }
       },
       "dependsOn": [
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupNameAnalyzer'))]"
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('baseName'))]"
       ]
     }
   ]

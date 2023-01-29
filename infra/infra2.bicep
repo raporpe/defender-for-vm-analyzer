@@ -2,14 +2,15 @@ targetScope = 'resourceGroup'
 
 param rg object
 param subscription object
+param baseName string
 
 var location = rg.location
 var storageAccountName = 'analyzer${uniqueString(rg.resourceId)}'
-var appName = 'def-vm-analyzer-${substring(uniqueString(rg.resourceId), 0, 5)}'
-var functionAppName = '${appName}-func'
-var hostingPlanName = '${appName}-hostingplan'
-var logAnalyticsName = '${appName}-loganalytics'
-var managedIdentityName = '${appName}-identity'
+var functionAppName = '${baseName}-func'
+var hostingPlanName = '${baseName}-hostingplan'
+var logAnalyticsName = '${baseName}-loganalytics'
+var managedIdentityName = '${baseName}-identity'
+var appInsightsName = '${baseName}-appinsights'
 var packageURL = 'https://github.com/raporpe/defender-for-vm-analyzer/releases/latest/download/release.zip'
 
 
@@ -54,6 +55,10 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
       '${functionAppIdentity.id}': {}
     }
   }
+
+  dependsOn: [
+    storageAccount
+  ]
 
   properties: {
     serverFarmId: hostingPlan.id
@@ -130,7 +135,7 @@ resource config 'Microsoft.Web/sites/config@2022-03-01' = {
 // }
 
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: appName
+  name: appInsightsName
   location: location
   kind: 'web'
   properties: {

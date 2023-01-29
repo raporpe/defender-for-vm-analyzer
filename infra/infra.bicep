@@ -6,11 +6,11 @@ param location string
 
 
 @description('The name of the resource group that will keep the analyzer.')
-var resourceGroupNameAnalyzer = 'defender-for-vm-analyzer-${uniqueString(subscription().subscriptionId)}'
+var baseName = 'def-vm-analyzer-${substring(uniqueString(subscription().subscriptionId), 0, 5)}'
 
 resource mainRG 'Microsoft.Resources/resourceGroups@2020-06-01' = {
 
-  name: resourceGroupNameAnalyzer
+  name: baseName
   location: location
 
 }
@@ -22,6 +22,7 @@ module resourceGroupContents 'infra2.bicep' = {
   params: {
     rg: mainRG
     subscription: subscription()
+    baseName: baseName
   }
 }
 

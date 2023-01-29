@@ -2,7 +2,7 @@ targetScope = 'subscription'
 
 
 @description('Location for all resources.')
-param location string
+param location string = deployment().location
 
 
 @description('The name of the resource group that will keep the analyzer.')

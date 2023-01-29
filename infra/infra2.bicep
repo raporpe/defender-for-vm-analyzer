@@ -4,11 +4,12 @@ param rg object
 param subscription object
 
 var location = rg.location
-var storageAccountName = '${uniqueString(rg.resourceId)}azfunctions'
+var storageAccountName = 'analyzer${uniqueString(rg.resourceId)}'
 var appName = 'defender-for-vm-analyzer-${uniqueString(rg.resourceId)}'
-var functionAppName = appName
-var hostingPlanName = appName
-var logAnalyticsName = appName
+var functionAppName = '${appName}-function'
+var hostingPlanName = '${appName}-hostingplan'
+var logAnalyticsName = '${appName}-loganalytics'
+var managedIdentityName = '${appName}-identity'
 var packageURL = 'https://github.com/raporpe/defender-for-vm-analyzer/releases/latest/download/release.zip'
 
 
@@ -30,7 +31,7 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2021-03-01' = {
 }
 
 resource functionAppIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-preview' = {
-  name: '${functionAppName}-identity'
+  name: managedIdentityName
   location: location
 }
 
@@ -108,9 +109,10 @@ resource config 'Microsoft.Web/sites/config@2022-03-01' = {
     WEBSITE_CONTENTSHARE: toLower(functionAppName)
     SUBSCRIPTION_ID: subscription.subscriptionId
     Project: 'defender-for-vm-analyzer'
-    WEBSITE_RUN_FROM_PACKAGE: packageURL
+    // WEBSITE_RUN_FROM_PACKAGE: packageURL
     FUNCTIONS_EXTENSION_VERSION: '~4'
-    SCM_DO_BUILD_DURING_DEPLOYMENT: 'true'
+    // SCM_DO_BUILD_DURING_DEPLOYMENT: 'true'
+    // ENABLE_ORYX_BUILD: 'true'
   }
   dependsOn: [
     // githubRepositoryFunctionCode

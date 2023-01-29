@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "5996604143410733795"
+      "templateHash": "18445489693340872004"
     }
   },
   "parameters": {
@@ -88,7 +88,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.13.1.58284",
-              "templateHash": "2760243050106100785"
+              "templateHash": "4231667073692915380"
             }
           },
           "parameters": {
@@ -183,10 +183,6 @@
                     {
                       "name": "FUNCTIONS_EXTENSION_VERSION",
                       "value": "~4"
-                    },
-                    {
-                      "name": "Project",
-                      "value": "defender-for-vm-analyzer"
                     }
                   ],
                   "ftpsState": "FtpsOnly",
@@ -212,7 +208,6 @@
                 "FUNCTIONS_WORKER_RUNTIME": "python",
                 "WEBSITE_CONTENTSHARE": "[toLower(variables('functionAppName'))]",
                 "SUBSCRIPTION_ID": "[parameters('subscription').subscriptionId]",
-                "Project": "defender-for-vm-analyzer",
                 "FUNCTIONS_EXTENSION_VERSION": "~4"
               },
               "dependsOn": [

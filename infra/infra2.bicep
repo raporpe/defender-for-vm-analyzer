@@ -87,11 +87,6 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
           name: 'FUNCTIONS_EXTENSION_VERSION'
           value: '~4'
         }
-        {
-          name: 'Project'
-          value: 'defender-for-vm-analyzer'
-        }
-
       ]
       ftpsState: 'FtpsOnly'
       minTlsVersion: '1.2'
@@ -113,7 +108,7 @@ resource config 'Microsoft.Web/sites/config@2022-03-01' = {
     FUNCTIONS_WORKER_RUNTIME: 'python'
     WEBSITE_CONTENTSHARE: toLower(functionAppName)
     SUBSCRIPTION_ID: subscription.subscriptionId
-    Project: 'defender-for-vm-analyzer'
+    // Project: 'defender-for-vm-analyzer'
     // WEBSITE_RUN_FROM_PACKAGE: packageURL
     FUNCTIONS_EXTENSION_VERSION: '~4'
     // SCM_DO_BUILD_DURING_DEPLOYMENT: 'true'

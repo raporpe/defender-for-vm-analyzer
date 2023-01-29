@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "161119621506338721"
+      "templateHash": "6461432603736916673"
     }
   },
   "parameters": {
@@ -29,15 +29,21 @@
     {
       "type": "Microsoft.Authorization/roleDefinitions",
       "apiVersion": "2022-04-01",
-      "name": "read-vm-info",
+      "name": "[guid(tenant().tenantId)]",
       "properties": {
+        "assignableScopes": [
+          "[format('subscriptions/{0}', subscription().subscriptionId)]"
+        ],
+        "description": "Read VM metadata",
         "permissions": [
           {
             "actions": [
-              "Microsoft.Compute/virtualMachines/read"
+              "Microsoft.Compute/virtualMachines/read",
+              "Microsoft.Compute/virtualMachines/instanceView/read"
             ]
           }
-        ]
+        ],
+        "roleName": "defender-for-analyzer-read-vm-metadata"
       }
     },
     {
@@ -46,12 +52,12 @@
       "name": "[guid(subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupNameAnalyzer')))]",
       "properties": {
         "principalId": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupNameAnalyzer')), 'Microsoft.Resources/deployments', 'mainRG'), '2020-10-01').outputs.functionAppIdentityId.value.properties.principalId]",
-        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'read-vm-info')]"
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', guid(tenant().tenantId))]"
       },
       "dependsOn": [
         "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('resourceGroupNameAnalyzer'))]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('resourceGroupNameAnalyzer')), 'Microsoft.Resources/deployments', 'mainRG')]",
-        "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'read-vm-info')]"
+        "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', guid(tenant().tenantId))]"
       ]
     },
     {
@@ -79,7 +85,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.13.1.58284",
-              "templateHash": "4921901050570373701"
+              "templateHash": "9811537707167782268"
             }
           },
           "parameters": {
@@ -168,24 +174,12 @@
                       "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('storageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-08-01').keys[0].value)]"
                     },
                     {
-                      "name": "FUNCTIONS_WORKER_RUNTIME",
-                      "value": "python"
-                    },
-                    {
-                      "name": "WEBSITE_CONTENTSHARE",
-                      "value": "[toLower(variables('functionAppName'))]"
-                    },
-                    {
                       "name": "FUNCTIONS_EXTENSION_VERSION",
                       "value": "~4"
                     },
                     {
-                      "name": "WEBSITE_RUN_FROM_PACKAGE",
-                      "value": "[variables('packageURL')]"
-                    },
-                    {
-                      "name": "SUBSCRIPTION_ID",
-                      "value": "[parameters('subscription').subscriptionId]"
+                      "name": "Project",
+                      "value": "defender-for-vm-analyzer"
                     }
                   ],
                   "ftpsState": "FtpsOnly",
@@ -201,22 +195,25 @@
               ]
             },
             {
-              "type": "Microsoft.OperationalInsights/workspaces",
-              "apiVersion": "2022-10-01",
-              "name": "[variables('logAnalyticsName')]",
-              "location": "[variables('location')]"
-            },
-            {
-              "type": "Microsoft.Web/sites/sourcecontrols",
+              "type": "Microsoft.Web/sites/config",
               "apiVersion": "2022-03-01",
-              "name": "[format('{0}/{1}', variables('functionAppName'), 'web')]",
+              "name": "[format('{0}/{1}', variables('functionAppName'), 'appsettings')]",
               "properties": {
-                "branch": "main",
-                "isManualIntegration": true,
-                "repoUrl": "https://github.com/raporpe/defender-for-vm-analyzer"
+                "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.Insights/components', variables('appName')), '2020-02-02').InstrumentationKey]",
+                "AzureWebJobsStorage": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('storageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-08-01').keys[0].value)]",
+                "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('storageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-08-01').keys[0].value)]",
+                "FUNCTIONS_WORKER_RUNTIME": "python",
+                "WEBSITE_CONTENTSHARE": "[toLower(variables('functionAppName'))]",
+                "SUBSCRIPTION_ID": "[parameters('subscription').subscriptionId]",
+                "Project": "defender-for-vm-analyzer",
+                "WEBSITE_RUN_FROM_PACKAGE": "[variables('packageURL')]",
+                "FUNCTIONS_EXTENSION_VERSION": "~4",
+                "SCM_DO_BUILD_DURING_DEPLOYMENT": "true"
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
+                "[resourceId('Microsoft.Insights/components', variables('appName'))]",
+                "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
               ]
             },
             {
@@ -232,6 +229,12 @@
               "dependsOn": [
                 "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsName'))]"
               ]
+            },
+            {
+              "type": "Microsoft.OperationalInsights/workspaces",
+              "apiVersion": "2022-10-01",
+              "name": "[variables('logAnalyticsName')]",
+              "location": "[variables('location')]"
             }
           ],
           "outputs": {

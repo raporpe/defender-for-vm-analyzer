@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "2107435776106854771"
+      "templateHash": "4289836823150342770"
     }
   },
   "parameters": {
@@ -85,7 +85,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.13.1.58284",
-              "templateHash": "159041509631090255"
+              "templateHash": "2918170597523885287"
             }
           },
           "parameters": {
@@ -99,8 +99,8 @@
           "variables": {
             "location": "[parameters('rg').location]",
             "storageAccountName": "[format('analyzer{0}', uniqueString(parameters('rg').resourceId))]",
-            "appName": "[format('defender-for-vm-analyzer-{0}', uniqueString(parameters('rg').resourceId))]",
-            "functionAppName": "[format('{0}-function', variables('appName'))]",
+            "appName": "[format('def-vm-analyzer-{0}', substring(uniqueString(parameters('rg').resourceId), 0, 5))]",
+            "functionAppName": "[format('{0}-func', variables('appName'))]",
             "hostingPlanName": "[format('{0}-hostingplan', variables('appName'))]",
             "logAnalyticsName": "[format('{0}-loganalytics', variables('appName'))]",
             "managedIdentityName": "[format('{0}-identity', variables('appName'))]",

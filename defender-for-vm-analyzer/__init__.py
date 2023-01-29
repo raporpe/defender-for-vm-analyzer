@@ -3,8 +3,6 @@ import logging
 logger = logging.getLogger(__name__)
 import os
 
-from . import credential_adapter
-
 import azure.functions as func
 
 # import the Azure SDK for Python management
@@ -26,43 +24,66 @@ def main(mytimer: func.TimerRequest) -> None:
     subscription_id = os.getenv('SUBSCRIPTION_ID')
 
     # Get the number of running Azure VMs in susbscription id
-    running_vms = get_running_vms(subscription_id)
+    running_vms = get_databricks_billable_vms(subscription_id)
 
     # Send the number of running Azure VMs to App Insights 
-    logger.info('Running VMs: %s', running_vms, extra={'custom_dimensions': {'running': running_vms}})
+    logger.info('Billable Databricks VMs: {}'.format(running_vms))
 
+"""
 
-def get_running_vms(subscription_id):
-    # Get the number of running Azure VMs in susbscription id
-    credentials = DefaultAzureCredential()
+This function gets the number of Databricks billable VMs in a subscription.
 
-    # Use adapter to avoid the following error: 'DefaultAzureCredential' object has no attribute 'signed_session'
-    wrapped_credential = credential_adapter.AzureIdentityCredentialAdapter(credentials)
-
-
-    compute_client = ComputeManagementClient(wrapped_credential,
+"""
+def get_databricks_billable_vms(subscription_id):
+    # Get authentication for making queries to Azure Resource Manager
+    compute_client = ComputeManagementClient(DefaultAzureCredential(),
                                              subscription_id)
-    running_vms = 0
+    
+    # Initialize the variable to return
+    running_databricks_billable_vms = 0
 
+    # Set the VM iterator type hint just for code hints 
     vm : azure.mgmt.compute.v2019_07_01.models._models_py3.VirtualMachine = None
 
+    # Iterate over all the VMs in the subscription
     for vm in compute_client.virtual_machines.list_all():
+
+        logger.info("Checking VM: " + vm.name)
+
+        # Check if the VM might be a Databricks worker
+        is_databricks_vm = vm.plan == "DatabricksWorker"
+        if is_databricks_vm:
+            logger.info("The current VM {} is a Databricks worker".format(vm.name))
+
+        # --- Now we have to check that this VM is actually being billed by Azure Defender for VM
+
+        # Get the resource group of the VM for quering the instace_view
         vm_resource_group = vm.id.split('/')[4]
-        logger.warn(vm.name)
 
         # Get the running status of the VM
         vm_status = compute_client.virtual_machines.instance_view(resource_group_name=vm_resource_group,
                                                                   vm_name=vm.name)
 
-        logger.warn(vm_status.statuses[1].display_status)
+        # Check that the statuses parameter has information
+        if vm_status.statuses == None:
+            logger.error("Cannot read the VM status.\
+                         It might be due to incorrect role assigments or permissions.\
+                         Both \"Microsoft.Compute/virtualMachines/read\" and\
+                         \"Microsoft.Compute/virtualMachines/instanceView/read\" are required.")
+            # Skip this VM since it cannot be confirmed to be running
+            continue
 
-        billable_databricks_vm = vm.provisioning_state == "Succeeded" and \
-            vm.plan == "DatabricksWorker" and \
-            vm_status.statuses[1].display_status == "VM running"
+        # Calculate if this VM is billable
+        vm_provisioned = vm.provisioning_state == "Succeeded"
+        vm_running = vm_status.statuses[1].display_status == "VM running"
+
+        billable_databricks_vm = vm_provisioned and \
+            is_databricks_vm and \
+            vm_running
 
         if billable_databricks_vm:
-            running_vms += 1
-            logger.info("The VM {} is a billable databricks VM".format(vm.name))
+            running_databricks_billable_vms += 1
+            logger.info("The VM {} is a billable databricks VM!".format(vm.name))
 
-    return running_vms
+    return running_databricks_billable_vms
     

@@ -5,12 +5,13 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "18445489693340872004"
+      "templateHash": "11867512375903260731"
     }
   },
   "parameters": {
     "location": {
       "type": "string",
+      "defaultValue": "[deployment().location]",
       "metadata": {
         "description": "Location for all resources."
       }

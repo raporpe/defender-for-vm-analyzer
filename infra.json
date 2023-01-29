@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "6461432603736916673"
+      "templateHash": "2107435776106854771"
     }
   },
   "parameters": {
@@ -85,7 +85,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.13.1.58284",
-              "templateHash": "9811537707167782268"
+              "templateHash": "159041509631090255"
             }
           },
           "parameters": {
@@ -98,11 +98,12 @@
           },
           "variables": {
             "location": "[parameters('rg').location]",
-            "storageAccountName": "[format('{0}azfunctions', uniqueString(parameters('rg').resourceId))]",
+            "storageAccountName": "[format('analyzer{0}', uniqueString(parameters('rg').resourceId))]",
             "appName": "[format('defender-for-vm-analyzer-{0}', uniqueString(parameters('rg').resourceId))]",
-            "functionAppName": "[variables('appName')]",
-            "hostingPlanName": "[variables('appName')]",
-            "logAnalyticsName": "[variables('appName')]",
+            "functionAppName": "[format('{0}-function', variables('appName'))]",
+            "hostingPlanName": "[format('{0}-hostingplan', variables('appName'))]",
+            "logAnalyticsName": "[format('{0}-loganalytics', variables('appName'))]",
+            "managedIdentityName": "[format('{0}-identity', variables('appName'))]",
             "packageURL": "https://github.com/raporpe/defender-for-vm-analyzer/releases/latest/download/release.zip"
           },
           "resources": [
@@ -125,7 +126,7 @@
             {
               "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
               "apiVersion": "2022-01-31-preview",
-              "name": "[format('{0}-identity', variables('functionAppName'))]",
+              "name": "[variables('managedIdentityName')]",
               "location": "[variables('location')]"
             },
             {
@@ -147,7 +148,7 @@
               "identity": {
                 "type": "UserAssigned",
                 "userAssignedIdentities": {
-                  "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-identity', variables('functionAppName'))))]": {}
+                  "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityName')))]": {}
                 }
               },
               "properties": {
@@ -189,7 +190,7 @@
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Insights/components', variables('appName'))]",
-                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-identity', variables('functionAppName')))]",
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityName'))]",
                 "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
               ]
@@ -206,9 +207,7 @@
                 "WEBSITE_CONTENTSHARE": "[toLower(variables('functionAppName'))]",
                 "SUBSCRIPTION_ID": "[parameters('subscription').subscriptionId]",
                 "Project": "defender-for-vm-analyzer",
-                "WEBSITE_RUN_FROM_PACKAGE": "[variables('packageURL')]",
-                "FUNCTIONS_EXTENSION_VERSION": "~4",
-                "SCM_DO_BUILD_DURING_DEPLOYMENT": "true"
+                "FUNCTIONS_EXTENSION_VERSION": "~4"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Insights/components', variables('appName'))]",
@@ -240,7 +239,7 @@
           "outputs": {
             "functionAppIdentityId": {
               "type": "object",
-              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-identity', variables('functionAppName'))), '2022-01-31-preview', 'full')]"
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityName')), '2022-01-31-preview', 'full')]"
             }
           }
         }

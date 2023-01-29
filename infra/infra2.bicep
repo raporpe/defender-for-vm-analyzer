@@ -5,8 +5,8 @@ param subscription object
 
 var location = rg.location
 var storageAccountName = 'analyzer${uniqueString(rg.resourceId)}'
-var appName = 'defender-for-vm-analyzer-${uniqueString(rg.resourceId)}'
-var functionAppName = '${appName}-function'
+var appName = 'def-vm-analyzer-${substring(uniqueString(rg.resourceId), 0, 5)}'
+var functionAppName = '${appName}-func'
 var hostingPlanName = '${appName}-hostingplan'
 var logAnalyticsName = '${appName}-loganalytics'
 var managedIdentityName = '${appName}-identity'

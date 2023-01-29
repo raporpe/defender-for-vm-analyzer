@@ -8,7 +8,3 @@ azure-functions
 azure-mgmt-compute
 azure-mgmt-resource
 msrest
-opencensus-ext-azure
-
-flask
-opentelemetry-distro

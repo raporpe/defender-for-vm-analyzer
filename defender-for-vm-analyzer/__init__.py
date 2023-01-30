@@ -55,7 +55,7 @@ def get_databricks_billable_vms(subscription_id):
         if is_databricks_vm:
             logger.info("The current VM {} is a Databricks worker".format(vm.name))
         else:
-            logger.info("The current VM {} is not a Databricks worker".format(vm.name))
+            logger.info("The current VM {} is not a Databricks worker since the VM plan is {}".format(vm.name, vm.plan))
             # Skip this VM since it is not a Databricks worker
             continue
 
@@ -79,7 +79,12 @@ def get_databricks_billable_vms(subscription_id):
 
         # Calculate if this VM is billable
         vm_provisioned = vm.provisioning_state == "Succeeded"
+        if not vm_provisioned:
+            logger.info("The VM {} is not in Succeeded provisioning state. Current state: {}".format(vm.name, vm.provisioning_state))
+
         vm_running = vm_status.statuses[1].display_status == "VM running"
+        if not vm_running:
+            logger.info("The VM {} is not running. Current state: {}".format(vm.name, vm_status.statuses[1].display_status))
 
         billable_databricks_vm = vm_provisioned and \
             is_databricks_vm and \

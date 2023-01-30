@@ -17,19 +17,15 @@ jobs:
     - name: 'Checkout GitHub action'
       uses: actions/checkout@v2
 
-    - name: Setup Python ${{ env.PYTHON_VERSION }} Environment
-      uses: actions/setup-python@v1
+    - name: 'Run docker oryx build'
+      uses: addnab/docker-run-action@v3
       with:
-        python-version: ${{ env.PYTHON_VERSION }}
+          image: mcr.microsoft.com/oryx/build:latest
+          options: -v ${{ github.workspace }}:/repo
+          run: oryx build /repo --output /repo
 
-    - name: 'Resolve Project Dependencies Using Pip'
-      shell: bash
-      run: |
-        pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt --target=".python_packages/lib/site-packages"
-        zip -r release.zip .
-        popd
+    - name: Zip everything
+      run: zip -r release.zip *
 
     - name: Create Release
       uses: ncipollo/release-action@v1.12.0

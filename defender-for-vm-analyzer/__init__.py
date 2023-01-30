@@ -54,6 +54,10 @@ def get_databricks_billable_vms(subscription_id):
         is_databricks_vm = vm.plan == "DatabricksWorker"
         if is_databricks_vm:
             logger.info("The current VM {} is a Databricks worker".format(vm.name))
+        else:
+            logger.info("The current VM {} is not a Databricks worker".format(vm.name))
+            # Skip this VM since it is not a Databricks worker
+            continue
 
         # --- Now we have to check that this VM is actually being billed by Azure Defender for VM
 

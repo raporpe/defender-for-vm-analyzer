@@ -19,7 +19,7 @@ This tool, created by Raúl Portugués del Peño (Cloud Solution Architect at Mi
 
 - In summary, this solution **logs the number of billable Databricks VMs for every minute**. Currently, this is the only way to calculate this metric since Azure Resource Graph does not hold historical data regarding the number of running VMs for a given time.
 - One drawback of this solution is that **it needs to be deployed for a month to calculate the monthly cost**. One solution is to extrapolate the cost of a week to a month.
-- The role "def-vm-analyzer-read-vm-metadata" is created automatically with the rest of resources and only has two permissions: ```Microsoft.Compute virtualMachines/read``` and ```Microsoft.Compute/virtualMachines/instanceView/read```.
+- The role "def-vm-analyzer-read-vm-metadata" is created automatically with the rest of resources and only has two permissions: ```Microsoft.Compute/virtualMachines/read``` and ```Microsoft.Compute/virtualMachines/instanceView/read```.
 
 ## Requirements
 
@@ -31,7 +31,7 @@ This tool, created by Raúl Portugués del Peño (Cloud Solution Architect at Mi
 2. All the resources are deployed to a resource group whose name starts with "def-vm-analyzer-xxxxx". Check if there was any error in the deployment.
 3. Check that the Azure Function is running by clicking on the "Functions" blade and then in "defender-for-vm-analyzer". Click the "Monitor" blade and wait for the function to run at least once (it runs at the start of every minute). Confirm that it is running correctly by scrolling to the botton and verifying that the following log is written: "Billable Databricks VMs: X"
 
-> In case you find the error ```"Cannot read the VM status. It might be due to incorrect role assigments or permissions. Both "Microsoft.Compute virtualMachines/read" and "Microsoft.Compute/virtualMachines/instanceView/read" are required."``` or any other permission related error, go to the subscription resource and check in the IAM blade that the managed identity "def-vm-analyzer-xxxxx-identity" has the role "def-vm-analyzer-read-vm-metadata".
+> In case you find the error ```"Cannot read the VM status. It might be due to incorrect role assigments or permissions. Both "Microsoft.Compute/virtualMachines/read" and "Microsoft.Compute/virtualMachines/instanceView/read" are required."``` or any other permission related error, go to the subscription resource and check in the IAM blade that the managed identity "def-vm-analyzer-xxxxx-identity" has the role "def-vm-analyzer-read-vm-metadata".
 
 4. You can now go back to the resource group and look for the Log analytics workspace. Perform the following KQL query to see the current consumption:
 

@@ -8,11 +8,21 @@ This tool, created by Raúl Portugués del Peño (Cloud Solution Architect at Mi
 
 ## How it works
 
-![solution_schema](https://user-images.githubusercontent.com/6137860/215767008-40400a32-2c40-4543-b55f-7d78a019859c.png)
+<img src="https://user-images.githubusercontent.com/6137860/215767008-40400a32-2c40-4543-b55f-7d78a019859c.png" width=50% height=50%>
+
+1. The Function App is triggered by a time trigger at the start of every minute.
+2. The Function App uses the managed identity to call the Azure management API asking for a list of all the VMs in the subscription. The managed identity has the role "def-vm-analyzer-read-vm-metadata" assigned.
+3. A list of all the VMs is retrieved.
+4. The total number of billable Databricks VMs is calculated and logged into a Log Analytics Workspace.
+5. The user performs a KQL query (the query is the __How to use__ section) to get the final cost calculation.
+
+- In summary, this solution logs the number of billable Databricks VMs for every minute. Currently, this is the only way to calculate this metric since Azure Resource Graph does not hold historical data regarding the number of running VMs for a given time.
+- One drawback of this solution is that it needs to be deployed for a month to calculate the monthly cost. One solution is to extrapolate the cost of a week to a month.
+- The role "def-vm-analyzer-read-vm-metadata" is created automatically with the rest of resources and only has two permissions: ```Microsoft.Compute virtualMachines/read``` and ```Microsoft.Compute/virtualMachines/instanceView/read```.
 
 ## Requirements
 
-- Owner role on the subscription where the solution will be deployed
+- Owner role on the subscription where the solution will be deployed.
 
 ## How to Use
 
@@ -66,4 +76,4 @@ SOFTWARE.
 
 ## Credits
 
-Thanks to David Wahby for helping me during the development process. 
+Thanks to David Wahby for helping me during the development process.

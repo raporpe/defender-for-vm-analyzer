@@ -6,11 +6,13 @@ This tool, created by Raúl Portugués del Peño (Cloud Solution Architect at Mi
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fraporpe%2Fdefender-for-vm-analyzer%2Fmain%2Finfra.json)
 
+## How it works
+
+TODO
+
 ## Requirements
 
-TODO: List any requirements for using the Defender for VM Analyzer (e.g. software dependencies, operating system compatibility, etc.).
-
-- Owner permissions on the subscription where the solution will be deployed
+- Owner role on the subscription where the solution will be deployed
 
 ## How to Use
 
@@ -18,9 +20,21 @@ TODO: List any requirements for using the Defender for VM Analyzer (e.g. softwar
 2. All the resources are deployed to a resource group whose name starts with "def-vm-analyzer-xxxxx". Check if there was any error in the deployment.
 3. Check that the Azure Function is running by clicking on the "Functions" blade and then in "defender-for-vm-analyzer". Click the "Monitor" blade and wait for the function to run at least once (it runs at the start of every minute). Confirm that it is running correctly by scrolling to the botton and verifying that the following log is written: "Billable Databricks VMs: X"
 
-> In case you find the error ```"Cannot read the VM status. It might be due to incorrect role assigments or permissions. Both "Microsoft.Compute virtualMachines/read" and "Microsoft.Compute/virtualMachines/instanceView/read" are required."``` or any other permission related error, you can grant the function a system-assigned identity with the Reader role to the whole subscription. It is not the best security practice, so check the code within ```__init.py__``` that is being run in the function.
+> In case you find the error ```"Cannot read the VM status. It might be due to incorrect role assigments or permissions. Both "Microsoft.Compute virtualMachines/read" and "Microsoft.Compute/virtualMachines/instanceView/read" are required."``` or any other permission related error, go to the subscription resource and check in the IAM blade that the managed identity "def-vm-analyzer-xxxxx-identity" has the role "def-vm-analyzer-read-vm-metadata".
 
 4. You can now go back to the resource group and look for the Log analytics workspace. Perform the following KQL query to see the current consumption:
+
+```let defenderForVMMonthlyCost = 15;
+let defenderForVMHourlyCost = defenderForVMMonthlyCost / 30.0 / 24.0;
+let TotalHours = toscalar(AppTraces 
+| where Message startswith "Billable Databricks VMs: "
+| project TimeGenerated, DatabricksVMCount = extract("[0-9]+", 0, Message)
+| summarize max(DatabricksVMCount) by bin(TimeGenerated, 1h)
+| summarize TotalHours = sum(toint(max_DatabricksVMCount)));
+print TotalCost = TotalHours*defenderForVMHourlyCost
+```
+
+This will calculate the cost of Azure Defender for VM for the Databricks VMs **for the Time Range selected at the top**. Remember that if you want to calculate the total cost for a month, the solution will have to be running for a month.
 
 ## Contributing
 

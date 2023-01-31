@@ -7,8 +7,9 @@ This tool, created by Raúl Portugués del Peño (Cloud Solution Architect at Mi
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fraporpe%2Fdefender-for-vm-analyzer%2Fmain%2Finfra.json)
 
 ## How it works
-
-<img align="right" src="https://user-images.githubusercontent.com/6137860/215767008-40400a32-2c40-4543-b55f-7d78a019859c.png" width=75% height=75%>
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/6137860/215767008-40400a32-2c40-4543-b55f-7d78a019859c.png" width=75% height=75%>
+</p>
 
 1. The Function App is triggered by a time trigger at the start of every minute.
 2. The Function App uses the managed identity to call the Azure management API asking for a list of all the VMs in the subscription. The managed identity has the role "def-vm-analyzer-read-vm-metadata" assigned.

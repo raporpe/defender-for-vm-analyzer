@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "9189183183444104825"
+      "templateHash": "1662199382023580895"
     }
   },
   "parameters": {
@@ -44,7 +44,7 @@
             ]
           }
         ],
-        "roleName": "defender-for-analyzer-read-vm-metadata"
+        "roleName": "def-vm-analyzer-read-vm-metadata"
       }
     },
     {

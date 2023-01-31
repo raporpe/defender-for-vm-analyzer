@@ -72,8 +72,8 @@ def get_databricks_billable_vms(subscription_id):
 
         if is_databricks_vm and DEBUG:
             logger.info("The VM {} is a Databricks VM".format(vm.name))
-        else:
-            logger.info("The VM {} is not a Databricks worker since the VM plan is {}".format(vm.name, vm.plan))
+        elif DEBUG:
+            logger.info("The VM {} is not a Databricks worker")
             # Skip this VM since it is not a Databricks worker
             continue
 

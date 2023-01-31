@@ -45,7 +45,7 @@ resource vmReadRole 'Microsoft.Authorization/roleDefinitions@2022-04-01' = {
         ]
       }
     ]
-    roleName: 'defender-for-analyzer-read-vm-metadata' 
+    roleName: 'def-vm-analyzer-read-vm-metadata' 
   }
 }
 

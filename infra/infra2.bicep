@@ -110,23 +110,9 @@ resource config 'Microsoft.Web/sites/config@2022-03-01' = {
     Project: 'defender-for-vm-analyzer'
     WEBSITE_RUN_FROM_PACKAGE: packageURL
     FUNCTIONS_EXTENSION_VERSION: '~4'
-    // SCM_DO_BUILD_DURING_DEPLOYMENT: 'true'
-    // ENABLE_ORYX_BUILD: 'true'
   }
-  dependsOn: [
-    // githubRepositoryFunctionCode
-  ]
 }
 
-// resource githubRepositoryFunctionCode 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = {
-//   parent: functionApp
-//   name: 'web'
-//   properties: {
-//     repoUrl: 'https://github.com/raporpe/defender-for-vm-analyzer'
-//     branch: 'main'
-//     isManualIntegration: true
-//   }
-// }
 
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: appInsightsName

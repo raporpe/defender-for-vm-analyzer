@@ -35,7 +35,8 @@ This tool, created by Raúl Portugués del Peño (Cloud Solution Architect at Mi
 
 4. You can now go back to the resource group and look for the Log analytics workspace. Perform the following KQL query to see the current consumption:
 
-```let defenderForVMMonthlyCost = 15;
+```sql
+let defenderForVMMonthlyCost = 15;
 let defenderForVMHourlyCost = defenderForVMMonthlyCost / 30.0 / 24.0;
 let TotalHours = toscalar(AppTraces 
 | where Message startswith "Billable Databricks VMs: "

@@ -8,7 +8,7 @@ This tool, created by Raúl Portugués del Peño (Cloud Solution Architect at Mi
 
 ## How it works
 
-TODO
+![solution_schema](https://user-images.githubusercontent.com/6137860/215767008-40400a32-2c40-4543-b55f-7d78a019859c.png)
 
 ## Requirements
 

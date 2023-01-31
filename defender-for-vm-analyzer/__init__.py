@@ -11,12 +11,15 @@ from azure.mgmt.compute import ComputeManagementClient
 
 from azure.mgmt.resource import ResourceManagementClient
 
+from . import credential_adapter
+
+DEBUG = os.getenv("DEBUG") == "true"
 
 def main(mytimer: func.TimerRequest) -> None:
     utc_timestamp = datetime.datetime.utcnow().replace(
         tzinfo=datetime.timezone.utc).isoformat()
 
-    if mytimer.past_due:
+    if mytimer.past_due and DEBUG:
         logging.info('The timer is past due!')
 
     logging.info('Python timer trigger function ran at %s', utc_timestamp)
@@ -35,8 +38,13 @@ This function gets the number of Databricks billable VMs in a subscription.
 
 """
 def get_databricks_billable_vms(subscription_id):
+    credential = DefaultAzureCredential()
+
+    if os.getenv("LOCAL_DEV") == "true":
+        credential = credential_adapter.AzureIdentityCredentialAdapter(credential)
+
     # Get authentication for making queries to Azure Resource Manager
-    compute_client = ComputeManagementClient(DefaultAzureCredential(),
+    compute_client = ComputeManagementClient(credential,
                                              subscription_id)
     
     # Initialize the variable to return
@@ -48,21 +56,28 @@ def get_databricks_billable_vms(subscription_id):
     # Iterate over all the VMs in the subscription
     for vm in compute_client.virtual_machines.list_all():
 
-        logger.info("Checking VM: " + vm.name)
+        logger.info(vm.tags)
+
+        # Get the resource group of the VM for quering the instace_view and get functions
+        vm_resource_group = vm.id.split('/')[4]
+
+        if DEBUG:
+            logger.info("Checking VM: " + vm.name)
+
 
         # Check if the VM might be a Databricks worker
-        is_databricks_vm = vm.plan == "DatabricksWorker"
-        if is_databricks_vm:
-            logger.info("The current VM {} is a Databricks worker".format(vm.name))
+        is_databricks_vm = False
+        if vm.tags != None:
+            is_databricks_vm = vm.tags["Vendor"] == "Databricks"
+
+        if is_databricks_vm and DEBUG:
+            logger.info("The VM {} is a Databricks VM".format(vm.name))
         else:
-            logger.info("The current VM {} is not a Databricks worker since the VM plan is {}".format(vm.name, vm.plan))
+            logger.info("The VM {} is not a Databricks worker since the VM plan is {}".format(vm.name, vm.plan))
             # Skip this VM since it is not a Databricks worker
             continue
 
         # --- Now we have to check that this VM is actually being billed by Azure Defender for VM
-
-        # Get the resource group of the VM for quering the instace_view
-        vm_resource_group = vm.id.split('/')[4]
 
         # Get the running status of the VM
         vm_status = compute_client.virtual_machines.instance_view(resource_group_name=vm_resource_group,
@@ -79,11 +94,11 @@ def get_databricks_billable_vms(subscription_id):
 
         # Calculate if this VM is billable
         vm_provisioned = vm.provisioning_state == "Succeeded"
-        if not vm_provisioned:
+        if not vm_provisioned and DEBUG:
             logger.info("The VM {} is not in Succeeded provisioning state. Current state: {}".format(vm.name, vm.provisioning_state))
 
         vm_running = vm_status.statuses[1].display_status == "VM running"
-        if not vm_running:
+        if not vm_running and DEBUG:
             logger.info("The VM {} is not running. Current state: {}".format(vm.name, vm_status.statuses[1].display_status))
 
         billable_databricks_vm = vm_provisioned and \

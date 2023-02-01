@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.13.1.58284",
-      "templateHash": "1662199382023580895"
+      "templateHash": "9367501188969499864"
     }
   },
   "parameters": {
@@ -89,7 +89,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.13.1.58284",
-              "templateHash": "11165168521073471521"
+              "templateHash": "8507991572392115809"
             }
           },
           "parameters": {
@@ -211,11 +211,13 @@
                 "SUBSCRIPTION_ID": "[parameters('subscription').subscriptionId]",
                 "Project": "defender-for-vm-analyzer",
                 "WEBSITE_RUN_FROM_PACKAGE": "[variables('packageURL')]",
-                "FUNCTIONS_EXTENSION_VERSION": "~4"
+                "FUNCTIONS_EXTENSION_VERSION": "~4",
+                "AZURE_CLIENT_ID": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityName')), '2022-01-31-preview').clientId]"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",
                 "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]",
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
               ]
             },

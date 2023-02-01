@@ -4,6 +4,8 @@ This tool, created by Raúl Portugués del Peño (Cloud Solution Architect at Mi
 
 > Defender for VMs cannot be enabled as of today (2022) in specific VMs: the only option is to enable it at the subscription level, which includes those VMs created by Databricks.
 
+Since the Databricks VMs are constantly being created and deleted, it is **not trivial** to calculate the cost and this is the raison d'etre for this tool.
+
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fraporpe%2Fdefender-for-vm-analyzer%2Fmain%2Finfra.json)
 
 ## How it works

@@ -56,8 +56,6 @@ def get_databricks_billable_vms(subscription_id):
     # Iterate over all the VMs in the subscription
     for vm in compute_client.virtual_machines.list_all():
 
-        logger.info(vm.tags)
-
         # Get the resource group of the VM for quering the instace_view and get functions
         vm_resource_group = vm.id.split('/')[4]
 

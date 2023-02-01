@@ -110,6 +110,7 @@ resource config 'Microsoft.Web/sites/config@2022-03-01' = {
     Project: 'defender-for-vm-analyzer'
     WEBSITE_RUN_FROM_PACKAGE: packageURL
     FUNCTIONS_EXTENSION_VERSION: '~4'
+    AZURE_CLIENT_ID: functionAppIdentity.properties.clientId
   }
 }
 

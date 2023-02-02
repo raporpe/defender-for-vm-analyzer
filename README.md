@@ -79,5 +79,5 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ## Credits
-
-Thanks to David Wahby for helping me during the development process.
+- Thanks to Yanina Falcón for the original idea and the dashboard resource graph queries
+- Thanks to David Wahby for helping me during the development process.

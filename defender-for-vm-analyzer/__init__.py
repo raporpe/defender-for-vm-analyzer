@@ -56,17 +56,20 @@ def get_databricks_billable_vms(subscription_id):
     # Iterate over all the VMs in the subscription
     for vm in compute_client.virtual_machines.list_all():
 
-        # Get the resource group of the VM for quering the instace_view and get functions
-        vm_resource_group = vm.id.split('/')[4]
-
         if DEBUG:
             logger.info("Checking VM: " + vm.name)
 
+        # Get the resource group of the VM for quering the instace_view and get functions
+        vm_resource_group = vm.id.split('/')[4]
 
         # Check if the VM might be a Databricks worker
         is_databricks_vm = False
         if vm.tags != None:
-            is_databricks_vm = vm.tags["Vendor"] == "Databricks"
+            try:
+                is_databricks_vm = vm.tags["Vendor"] == "Databricks"
+            except KeyError:
+                # Does not have the "Vendor" tag
+                pass
 
         if is_databricks_vm and DEBUG:
             logger.info("The VM {} is a Databricks VM".format(vm.name))
@@ -79,8 +82,15 @@ def get_databricks_billable_vms(subscription_id):
         # --- Now we have to check that this VM is actually being billed by Azure Defender for VM
 
         # Get the running status of the VM
-        vm_status = compute_client.virtual_machines.instance_view(resource_group_name=vm_resource_group,
+        try:
+            vm_status = compute_client.virtual_machines.instance_view(resource_group_name=vm_resource_group,
                                                                   vm_name=vm.name)
+        except Exception as e:
+            logger.error("Cannot read the VM status.\
+                         It might be due to lack of permissions.\
+                         Or an error in the API call.: {}".format(e))")
+            # Skip this VM since it cannot be confirmed to be running
+            continue
 
         # Check that the statuses parameter has information
         if vm_status.statuses == None:

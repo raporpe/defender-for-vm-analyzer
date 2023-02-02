@@ -88,7 +88,7 @@ def get_databricks_billable_vms(subscription_id):
         except Exception as e:
             logger.error("Cannot read the VM status.\
                          It might be due to lack of permissions.\
-                         Or an error in the API call.: {}".format(e))")
+                         Or an error in the API call.: {}".format(e))
             # Skip this VM since it cannot be confirmed to be running
             continue
 

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.14.6.61914",
-      "templateHash": "797136105288593440"
+      "templateHash": "9397408373684329793"
     }
   },
   "parameters": {
@@ -89,7 +89,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.14.6.61914",
-              "templateHash": "10238474108763749924"
+              "templateHash": "7635096170406393622"
             }
           },
           "parameters": {
@@ -213,7 +213,8 @@
                 "WEBSITE_RUN_FROM_PACKAGE": "[variables('packageURL')]",
                 "FUNCTIONS_EXTENSION_VERSION": "~4",
                 "AZURE_CLIENT_ID": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityName')), '2022-01-31-preview').clientId]",
-                "DEBUG": "false"
+                "DEBUG": "false",
+                "DEBUG_ANONYMOUS_IDENTITY": "[uniqueString(parameters('rg').resourceId)]"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",
@@ -241,6 +242,279 @@
               "apiVersion": "2022-10-01",
               "name": "[variables('logAnalyticsName')]",
               "location": "[variables('location')]"
+            },
+            {
+              "type": "Microsoft.Portal/dashboards",
+              "apiVersion": "2020-09-01-preview",
+              "name": "[format('{0}-dashboard', parameters('baseName'))]",
+              "location": "[parameters('rg').location]",
+              "properties": {
+                "lenses": [
+                  {
+                    "order": 0,
+                    "parts": [
+                      {
+                        "position": {
+                          "x": 0,
+                          "y": 0,
+                          "colSpan": 6,
+                          "rowSpan": 5
+                        },
+                        "metadata": {
+                          "inputs": [
+                            {
+                              "name": "partTitle",
+                              "value": "Running Databricks VMs",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "query",
+                              "value": "[format('resources\r\n| where type == \"microsoft.compute/virtualmachines\"\r\n| where subscriptionId == \"{0}\"\r\n| mv-expand tags\r\n| project name, tags\r\n| extend tagKey = tostring(bag_keys(tags)[0])\r\n| extend tagValue = tostring(tags[tagKey])\r\n| where tagKey =~ \"Vendor\"\r\n| summarize count() by tagValue\r\n', parameters('subscription').subscriptionId)]",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "chartType",
+                              "value": 2,
+                              "isOptional": true
+                            },
+                            {
+                              "name": "isShared",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "queryId",
+                              "value": "385824b2-4ec4-4209-9eda-d840eb21452f",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "formatResults",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "queryScope",
+                              "value": {
+                                "scope": 0,
+                                "values": []
+                              },
+                              "isOptional": true
+                            }
+                          ],
+                          "type": "Extension/HubsExtension/PartType/ArgQueryChartTile",
+                          "settings": {}
+                        }
+                      },
+                      {
+                        "position": {
+                          "x": 6,
+                          "y": 0,
+                          "colSpan": 6,
+                          "rowSpan": 5
+                        },
+                        "metadata": {
+                          "inputs": [
+                            {
+                              "name": "partTitle",
+                              "value": "Non-databricks VMs",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "query",
+                              "value": "[format('resources\r\n| where type == \"microsoft.compute/virtualmachines\"\r\n| where subscriptionId == \"{0}\"\r\n| mv-expand tags\r\n| project name, tags\r\n| extend tagKey = tostring(bag_keys(tags)[0])\r\n| extend tagValue = tostring(tags[tagKey])\r\n| where tagKey =~ \"app\"\r\n| summarize count() by tagValue', parameters('subscription').subscriptionId)]",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "chartType",
+                              "value": 2,
+                              "isOptional": true
+                            },
+                            {
+                              "name": "isShared",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "queryId",
+                              "value": "385824b2-4ec4-4209-9eda-d840eb21452f",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "formatResults",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "queryScope",
+                              "value": {
+                                "scope": 0,
+                                "values": []
+                              },
+                              "isOptional": true
+                            }
+                          ],
+                          "type": "Extension/HubsExtension/PartType/ArgQueryChartTile",
+                          "settings": {},
+                          "partHeader": {
+                            "title": "VM",
+                            "subtitle": ""
+                          }
+                        }
+                      },
+                      {
+                        "position": {
+                          "x": 6,
+                          "y": 5,
+                          "colSpan": 6,
+                          "rowSpan": 5
+                        },
+                        "metadata": {
+                          "inputs": [
+                            {
+                              "name": "resourceTypeMode",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "ComponentId",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "Scope",
+                              "value": {
+                                "resourceIds": [
+                                  "[format('/subscriptions/{0}/resourcegroups/{1}/providers/microsoft.operationalinsights/workspaces/{2}', parameters('subscription').subscriptionId, parameters('baseName'), variables('logAnalyticsName'))]"
+                                ]
+                              },
+                              "isOptional": true
+                            },
+                            {
+                              "name": "PartId",
+                              "value": "7a9ba5c4-8f49-40a7-8368-03d70117fed7",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "Version",
+                              "value": "2.0",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "TimeRange",
+                              "value": "P1D",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "DashboardId",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "DraftRequestParameters",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "Query",
+                              "value": "let defenderForVMMonthlyCost = 14.6;\nlet defenderForVMHourlyCost = defenderForVMMonthlyCost / 30.0 / 24.0;\nlet TotalHours = toscalar(AppTraces \n| where Message startswith \"Billable Databricks VMs: \"\n| project TimeGenerated, DatabricksVMCount = extract(\"[0-9]+\", 0, Message)\n| summarize max(DatabricksVMCount) by bin(TimeGenerated, 1h)\n| summarize TotalHours = sum(toint(max_DatabricksVMCount)));\nprint TotalCost = TotalHours*defenderForVMHourlyCost\n",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "ControlType",
+                              "value": "AnalyticsGrid",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "SpecificChart",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "PartTitle",
+                              "value": "Analytics",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "PartSubTitle",
+                              "value": "[variables('logAnalyticsName')]",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "Dimensions",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "LegendOptions",
+                              "isOptional": true
+                            },
+                            {
+                              "name": "IsQueryContainTimeRange",
+                              "value": false,
+                              "isOptional": true
+                            }
+                          ],
+                          "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+                          "settings": {},
+                          "partHeader": {
+                            "title": "Defender for server cost for Databricks VMs",
+                            "subtitle": "The cost is in dollars ($)"
+                          }
+                        }
+                      },
+                      {
+                        "position": {
+                          "x": 0,
+                          "y": 5,
+                          "colSpan": 6,
+                          "rowSpan": 5
+                        },
+                        "metadata": {
+                          "inputs": [],
+                          "type": "Extension/HubsExtension/PartType/MarkdownPart",
+                          "settings": {
+                            "content": {
+                              "content": "__My data__\n\nThis tile lets you put custom content on your dashboard. It supports plain text, __Markdown__, and even limited HTML like images <img width='10' src='https://portal.azure.com/favicon.ico'/> and <a href='https://azure.microsoft.com' target='_blank'>links</a> that open in a new tab.\n",
+                              "title": "Information",
+                              "subtitle": "Project GitHub README.md",
+                              "markdownSource": 2,
+                              "markdownUri": "https://raw.githubusercontent.com/raporpe/defender-for-vm-analyzer/main/README.md"
+                            }
+                          },
+                          "partHeader": {
+                            "title": "Information",
+                            "subtitle": "Project GitHub Readme"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "metadata": {
+                  "model": {
+                    "timeRange": {
+                      "value": {
+                        "relative": {
+                          "duration": 24,
+                          "timeUnit": 1
+                        }
+                      },
+                      "type": "MsPortalFx.Composition.Configuration.ValueTypes.TimeRange"
+                    },
+                    "filterLocale": {
+                      "value": "en-us"
+                    },
+                    "filters": {
+                      "value": {
+                        "MsPortalFx_TimeRange": {
+                          "model": {
+                            "format": "utc",
+                            "granularity": "auto",
+                            "relative": "30d"
+                          },
+                          "displayCache": {
+                            "name": "UTC Time",
+                            "value": "Past 30 days"
+                          },
+                          "filteredPartIds": [
+                            "StartboardPart-LogsDashboardPart-807fe50a-e2d8-4b53-abd1-acce9ca0f2f1"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           ],
           "outputs": {

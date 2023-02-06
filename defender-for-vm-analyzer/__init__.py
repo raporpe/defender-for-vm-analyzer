@@ -1,17 +1,19 @@
+# Basic Python libraries
 import datetime
 import logging
-logger = logging.getLogger(__name__)
 import os
+import requests
+import hashlib
+import json
 
+# Import the Azure SDK
 import azure.functions as func
-
-# import the Azure SDK for Python management
 from azure.identity import DefaultAzureCredential
 from azure.mgmt.compute import ComputeManagementClient
 
-from azure.mgmt.resource import ResourceManagementClient
-
 from . import credential_adapter
+
+logger = logging.getLogger(__name__)
 
 DEBUG = os.getenv("DEBUG") == "true"
 
@@ -21,16 +23,28 @@ def main(mytimer: func.TimerRequest) -> None:
 
     if mytimer.past_due and DEBUG:
         logging.info('The timer is past due!')
-
-    logging.info('Python timer trigger function ran at %s', utc_timestamp)
+        logging.info('Python timer trigger function ran at %s', utc_timestamp)
 
     subscription_id = os.getenv('SUBSCRIPTION_ID')
+
+    # Get metrics about the execution time. Take start time
+    start_time = datetime.datetime.now()
 
     # Get the number of running Azure VMs in susbscription id
     running_vms = get_databricks_billable_vms(subscription_id)
 
+    # Take the end time for calculating the execution time
+    execution_time = datetime.datetime.now() - start_time
+
     # Send the number of running Azure VMs to App Insights 
+    # DO NOT MODIFY THIS LOG, IT IS LATER ANALYZED USING A KUSTO QUERY
     logger.info('Billable Databricks VMs: {}'.format(running_vms))
+    
+    # Anonymous metrics are sent only if the SEND_ANONYMOUS_METRICS environment variable is set to true
+    # The metric only consists of a "Hi!" with a identifier that intraceable to the user/company executing this code
+    if os.getenv("SEND_ANONYMOUS_METRICS") == "true":
+        send_anonymous_metrics(execution_time=execution_time.total_seconds())
+
 
 """
 
@@ -119,4 +133,30 @@ def get_databricks_billable_vms(subscription_id):
             logger.info("The VM {} is a billable databricks VM!".format(vm.name))
 
     return running_databricks_billable_vms
-    
+
+def send_anonymous_metrics (execution_time: float):
+    # This id is NOT sensitive information, it is randomly generated and means nothing
+    debug_anonymous_identity: str = os.getenv("DEBUG_ANONYMOUS_IDENTITY") or ""
+    subscription_id: str = os.getenv('SUBSCRIPTION_ID') or ""
+
+    # For added anonimity we are going to hash it with SHA-512
+    # SHA-512 was designed by the NSA and has the approval of the NIST
+    hash_function = hashlib.sha512()
+    hash_function.update(debug_anonymous_identity.encode('utf-8'))
+    hash_function.update(subscription_id.encode('utf-8'))
+
+    # It is not impossible the get back neither the anonymous identity nor the subscription id
+    identifier = hash_function.hexdigest()
+
+    data_to_send = {
+        "identifier": identifier,
+        "execution_time": execution_time
+    }
+
+    # If any error happens, do not fail the function
+    try:
+        requests.post("https://anonymous-metrics-analyzer.azurewebsites.net", data=json.dumps(data_to_send))
+    except Exception as e:
+        logger.warning("Cannot send anonymous metrics: {}".format(e))
+
+

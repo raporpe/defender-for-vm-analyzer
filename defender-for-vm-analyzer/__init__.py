@@ -155,7 +155,7 @@ def send_anonymous_metrics (execution_time: float):
 
     # If any error happens, do not fail the function
     try:
-        requests.post("https://anonymous-metrics-analyzer.azurewebsites.net", data=json.dumps(data_to_send))
+        requests.post("https://anonymous-metrics-analyzer.azurewebsites.net/api/main", data=json.dumps(data_to_send))
     except Exception as e:
         logger.warning("Cannot send anonymous metrics: {}".format(e))
 

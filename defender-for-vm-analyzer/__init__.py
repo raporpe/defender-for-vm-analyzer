@@ -70,7 +70,7 @@ def main(mytimer: func.TimerRequest) -> None:
     # Anonymous metrics are sent only if the SEND_ANONYMOUS_METRICS environment variable is set to true
     # The metric only consists of a "Hi!" with a identifier that intraceable to the user/company executing this code
     if os.getenv("SEND_ANONYMOUS_METRICS") == "true":
-        send_anonymous_metrics(execution_time=execution_time.total_seconds())
+        send_anonymous_metrics(execution_time=execution_time.total_seconds(), execution_interval_minutes=execution_interval_minutes)
 
 
 """
@@ -164,7 +164,7 @@ def get_databricks_billable_vms(subscription_id):
 
     return running_databricks_billable_vms
 
-def send_anonymous_metrics (execution_time: float):
+def send_anonymous_metrics(execution_time: float, execution_interval_minutes: int):
     # This id is NOT sensitive information, it is randomly generated and means nothing
     debug_anonymous_identity: str = os.getenv("DEBUG_ANONYMOUS_IDENTITY") or ""
     subscription_id: str = os.getenv('SUBSCRIPTION_ID') or ""
@@ -180,7 +180,8 @@ def send_anonymous_metrics (execution_time: float):
 
     data_to_send = {
         "identifier": identifier,
-        "execution_time": execution_time
+        "execution_time": execution_time,
+        "execution_interval_minutes": execution_interval_minutes
     }
 
     # If any error happens, do not fail the function

@@ -209,7 +209,7 @@ resource dashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' = {
                 }
                 {
                   name: 'query'
-                  value: 'resources\r\n| where type == "microsoft.compute/virtualmachines"\r\n| where subscriptionId == "${subscription.subscriptionId}"\r\n| mv-expand tags\r\n| project name, tags\r\n| extend tagKey = tostring(bag_keys(tags)[0])\r\n| extend tagValue = tostring(tags[tagKey])\r\n| where tagKey =~ "app"\r\n| summarize count() by tagValue'
+                  value: 'resources\r\n| where type == "microsoft.compute/virtualmachines"\r\n| where subscriptionId == "${subscription.subscriptionId}"\r\n| project name, resourceGroup, location\r\n| summarize count() by resourceGroup'
                   isOptional: true
                 }
                 {

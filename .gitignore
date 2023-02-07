@@ -1,5 +1,6 @@
 # No json files compiled in the infra folder
 infra/*.json
+dashboard_decompile.*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

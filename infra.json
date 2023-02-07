@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.14.6.61914",
-      "templateHash": "11654713397977669773"
+      "templateHash": "1224280434986044854"
     }
   },
   "parameters": {
@@ -101,7 +101,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.14.6.61914",
-              "templateHash": "14536556250091997228"
+              "templateHash": "750351559173415836"
             }
           },
           "parameters": {
@@ -335,7 +335,7 @@
                             },
                             {
                               "name": "query",
-                              "value": "[format('resources\r\n| where type == \"microsoft.compute/virtualmachines\"\r\n| where subscriptionId == \"{0}\"\r\n| mv-expand tags\r\n| project name, tags\r\n| extend tagKey = tostring(bag_keys(tags)[0])\r\n| extend tagValue = tostring(tags[tagKey])\r\n| where tagKey =~ \"app\"\r\n| summarize count() by tagValue', parameters('subscription').subscriptionId)]",
+                              "value": "[format('resources\r\n| where type == \"microsoft.compute/virtualmachines\"\r\n| where subscriptionId == \"{0}\"\r\n| project name, resourceGroup, location\r\n| summarize count() by resourceGroup', parameters('subscription').subscriptionId)]",
                               "isOptional": true
                             },
                             {

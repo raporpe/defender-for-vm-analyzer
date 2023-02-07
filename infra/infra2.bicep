@@ -3,6 +3,7 @@ targetScope = 'resourceGroup'
 param rg object
 param subscription object
 param baseName string
+param executionIntervalMinutes int
 
 var location = rg.location
 var storageAccountName = 'analyzer${uniqueString(rg.resourceId)}'
@@ -113,6 +114,7 @@ resource config 'Microsoft.Web/sites/config@2022-03-01' = {
     AZURE_CLIENT_ID: functionAppIdentity.properties.clientId
     DEBUG: 'false'
     DEBUG_ANONYMOUS_IDENTITY: uniqueString(rg.resourceId)
+    EXECUTION_INTERVAL_MINUTES: string(executionIntervalMinutes)
   }
 }
 

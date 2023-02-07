@@ -4,6 +4,11 @@ targetScope = 'subscription'
 @description('Location for all resources.')
 param location string = deployment().location
 
+@description('Exection interval in minutes. Every how many minutes you want the function to evaluate the running VMs. If there are many VMs in the subscription, it might be possible the Azure Management API limit is reached; consider a high minute interval for these cases.')
+@minValue(1)
+@maxValue(60)
+param executionIntervalMinutes int = 5
+
 
 @description('The name of the resource group that will keep the analyzer.')
 var baseName = 'def-vm-analyzer-${substring(uniqueString(subscription().subscriptionId), 0, 5)}'
@@ -23,6 +28,7 @@ module resourceGroupContents 'infra2.bicep' = {
     rg: mainRG
     subscription: subscription()
     baseName: baseName
+    executionIntervalMinutes: executionIntervalMinutes
   }
 }
 

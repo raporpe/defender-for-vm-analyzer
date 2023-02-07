@@ -4,7 +4,7 @@ This tool, created by Raúl Portugués del Peño (Cloud Solution Architect at Mi
 
 > Defender for VMs cannot be enabled as of today (2022) in specific VMs: the only option is to enable it at the subscription level, which includes those VMs created by Databricks.
 
-Since the Databricks VMs are constantly being created and deleted, it is **not trivial** to calculate the cost and this is the raison d'etre for this tool.
+Since the Databricks VMs are constantly being created and deleted, it is **not trivial** to calculate the cost and this is the __raison d'etre__ for this tool.
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fraporpe%2Fdefender-for-vm-analyzer%2Fmain%2Finfra.json)
 
@@ -20,13 +20,13 @@ Since the Databricks VMs are constantly being created and deleted, it is **not t
 5. The total number of billable Databricks VMs is calculated and **logged into the Log Analytics Workspace**.
 6. The user checks the results in the bashboard or performs a KQL query (the query is the __How to use__ section) to get the final cost calculation.
 
-- In summary, this solution **logs the number of billable Databricks VMs for every minute**. Currently, this is the only way to calculate this metric since Azure Resource Graph does not hold historical data regarding the number of running VMs for a given time.
+- In summary, this solution **logs the number of billable Databricks VMs every N minutes** (where N is the **Execution Interval Minutes** field). Currently, this is the only way to calculate this metric since Azure Resource Graph does not hold historical data regarding the number of running VMs for a given time and that historic has to be built.
 
 ### Things to consider
 
-- This app function will make N+1 (where N is the number of VMs in the subscription) queries to the Azure Resource Manager API per execution. This API has [**limits**](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/request-limits-and-throttling) per identity, subscription and tenant so calls from other should not be affected. This is the reason why it is important to increase the **Execution Interval Minutes** field. 
-- One drawback of this solution is that **it needs to be deployed for a month to calculate the monthly cost**. One solution is to extrapolate the cost of a week to a month.
-- The role ```def-vm-analyzer-read-vm-metadata``` is created automatically with the rest of resources and only has two permissions: ```Microsoft.Compute/virtualMachines/read``` and ```Microsoft.Compute/virtualMachines/instanceView/read```.
+- This app function will make N+1 (where N is the number of VMs in the subscription) queries to the **Azure Resource Manager API** per execution. This API has [**limits**](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/request-limits-and-throttling) per identity, subscription and tenant so calls from other should not be affected. This is the reason why it is important to increase the **Execution Interval Minutes** field in critial scenarios.
+- One drawback of this solution is that **it needs to be deployed for a month to calculate the monthly cost**. One possible workaround is to extrapolate the cost of a week to a month.
+- The role ```def-vm-analyzer-read-vm-metadata``` is created automatically with the rest of resources and only has two permissions: ```Microsoft.Compute/virtualMachines/read``` and ```Microsoft.Compute/virtualMachines/instanceView/read```. If the solution is deployed for a second time in the same tenant, it will throw an error because this role already exists and is being created again.
 
 ## Requirements
 
@@ -34,7 +34,7 @@ Since the Databricks VMs are constantly being created and deleted, it is **not t
 
 ## How to Use
 
-1. Click the "Deploy to Azure" blue button in a separate window (hold the control key while clicking it).
+1. Click the **__Deploy to Azure__** blue button in a separate window (hold the control key while clicking it).
 2. If prompted, login with your credentials that have permissions on the subscription. Select the region to deploy, do not modify the **location** field, just the **region** field. In the **Execution Interval Minutes** field leave the default value if you have less than 500 VMs. In case you have more, a 10 minute interval is recommended. This interval is important for detecting VMs that might only be running for some minutes and are billed an hour by Defender for Server.
 3. All the resources are deployed to a resource group whose name starts with ```def-vm-analyzer-xxxxx```. Check if there was any error in the deployment.
 4. Check that the App Function is running by clicking on the "Functions" blade and then in ```defender-for-vm-analyzer```. Click the **Monitor** blade and wait for the function to run at least once (it runs at the start of every minute). Confirm that no exceptions are thrown.

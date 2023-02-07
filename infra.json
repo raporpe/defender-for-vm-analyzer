@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.14.6.61914",
-      "templateHash": "9397408373684329793"
+      "templateHash": "12680471808393890893"
     }
   },
   "parameters": {
@@ -14,6 +14,15 @@
       "defaultValue": "[deployment().location]",
       "metadata": {
         "description": "Location for all resources."
+      }
+    },
+    "executionIntervalMinutes": {
+      "type": "int",
+      "defaultValue": 5,
+      "maxValue": 60,
+      "minValue": 1,
+      "metadata": {
+        "description": "Exection interval in minutes. Every how many minutes you want the function to evaluate the running VMs. If there are many VMs in the subscription, it might be possible the Azure Management API limit is reached; consider a high minute interval for these cases."
       }
     }
   },
@@ -80,6 +89,9 @@
           },
           "baseName": {
             "value": "[variables('baseName')]"
+          },
+          "executionIntervalMinutes": {
+            "value": "[parameters('executionIntervalMinutes')]"
           }
         },
         "template": {
@@ -89,7 +101,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.14.6.61914",
-              "templateHash": "7635096170406393622"
+              "templateHash": "8460075874937256349"
             }
           },
           "parameters": {
@@ -101,6 +113,9 @@
             },
             "baseName": {
               "type": "string"
+            },
+            "executionIntervalMinutes": {
+              "type": "int"
             }
           },
           "variables": {
@@ -214,7 +229,8 @@
                 "FUNCTIONS_EXTENSION_VERSION": "~4",
                 "AZURE_CLIENT_ID": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityName')), '2022-01-31-preview').clientId]",
                 "DEBUG": "false",
-                "DEBUG_ANONYMOUS_IDENTITY": "[uniqueString(parameters('rg').resourceId)]"
+                "DEBUG_ANONYMOUS_IDENTITY": "[uniqueString(parameters('rg').resourceId)]",
+                "EXECUTION_INTERVAL_MINUTES": "[string(parameters('executionIntervalMinutes'))]"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",

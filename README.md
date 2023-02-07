@@ -13,13 +13,18 @@ Since the Databricks VMs are constantly being created and deleted, it is **not t
     <img src="https://user-images.githubusercontent.com/6137860/215767008-40400a32-2c40-4543-b55f-7d78a019859c.png" width=75% height=75%>
 </p>
 
-1. The Function App is triggered by a **time trigger at the start of every minute**.
-2. The Function App uses the managed identity to call the Azure management API asking for a list of all the VMs in the subscription. The managed identity has the role ```def-vm-analyzer-read-vm-metadata``` assigned.
-3. A list of all the VMs is retrieved.
-4. The total number of billable Databricks VMs is calculated and **logged into a Log Analytics Workspace**.
-5. The user performs a KQL query (the query is the __How to use__ section) to get the final cost calculation.
+1. The App Function is triggered by a **time trigger at the start of every minute**.
+2. The App Function checks the last execution time and stops if it ran less time ago than the **Execution Interval Minutes** field specified during setup.
+3. The App Function uses the managed identity to call the [**Azure Resource Manager API**](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/overview) asking for a list of all the VMs in the subscription. The managed identity has the role ```def-vm-analyzer-read-vm-metadata``` assigned.
+4. A list of all the VMs is retrieved. And each VM is checked for the status (since only running VMs are billed).
+5. The total number of billable Databricks VMs is calculated and **logged into the Log Analytics Workspace**.
+6. The user checks the results in the bashboard or performs a KQL query (the query is the __How to use__ section) to get the final cost calculation.
 
 - In summary, this solution **logs the number of billable Databricks VMs for every minute**. Currently, this is the only way to calculate this metric since Azure Resource Graph does not hold historical data regarding the number of running VMs for a given time.
+
+### Things to consider
+
+- This app function will make N+1 (where N is the number of VMs in the subscription) queries to the Azure Resource Manager API per execution. This API has [**limits**](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/request-limits-and-throttling) per identity, subscription and tenant so calls from other should not be affected. This is the reason why it is important to increase the **Execution Interval Minutes** field. 
 - One drawback of this solution is that **it needs to be deployed for a month to calculate the monthly cost**. One solution is to extrapolate the cost of a week to a month.
 - The role ```def-vm-analyzer-read-vm-metadata``` is created automatically with the rest of resources and only has two permissions: ```Microsoft.Compute/virtualMachines/read``` and ```Microsoft.Compute/virtualMachines/instanceView/read```.
 
@@ -32,7 +37,7 @@ Since the Databricks VMs are constantly being created and deleted, it is **not t
 1. Click the "Deploy to Azure" blue button in a separate window (hold the control key while clicking it).
 2. If prompted, login with your credentials that have permissions on the subscription. Select the region to deploy, do not modify the **location** field, just the **region** field. In the **Execution Interval Minutes** field leave the default value if you have less than 500 VMs. In case you have more, a 10 minute interval is recommended. This interval is important for detecting VMs that might only be running for some minutes and are billed an hour by Defender for Server.
 3. All the resources are deployed to a resource group whose name starts with ```def-vm-analyzer-xxxxx```. Check if there was any error in the deployment.
-4. Check that the Azure Function is running by clicking on the "Functions" blade and then in ```defender-for-vm-analyzer```. Click the **Monitor** blade and wait for the function to run at least once (it runs at the start of every minute). Confirm that no exceptions are thrown.
+4. Check that the App Function is running by clicking on the "Functions" blade and then in ```defender-for-vm-analyzer```. Click the **Monitor** blade and wait for the function to run at least once (it runs at the start of every minute). Confirm that no exceptions are thrown.
 
 > In case you find the error ```"Cannot read the VM status. It might be due to incorrect role assigments or permissions. Both "Microsoft.Compute/virtualMachines/read" and "Microsoft.Compute/virtualMachines/instanceView/read" are required."``` or any other permission related error, go to the subscription resource and check in the IAM blade that the managed identity "def-vm-analyzer-xxxxx-identity" has the role "def-vm-analyzer-read-vm-metadata".
 

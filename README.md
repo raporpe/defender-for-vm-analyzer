@@ -38,8 +38,7 @@ Since the Databricks VMs are constantly being created and deleted, it is **not t
 4. You can now go back to the resource group and look for the Log analytics workspace. Perform the following KQL query to see the current consumption:
 
 ```sql
-let defenderForVMMonthlyCost = 15;
-let defenderForVMHourlyCost = defenderForVMMonthlyCost / 30.0 / 24.0;
+let defenderForVMHourlyCost = 0.02;
 let TotalHours = toscalar(AppTraces 
 | where Message startswith "Billable Databricks VMs: "
 | project TimeGenerated, DatabricksVMCount = extract("[0-9]+", 0, Message)

@@ -204,7 +204,7 @@ resource dashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' = {
               inputs: [
                 {
                   name: 'partTitle'
-                  value: 'Non-databricks VMs'
+                  value: 'All VMs'
                   isOptional: true
                 }
                 {
@@ -243,7 +243,7 @@ resource dashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' = {
               settings: {
               }
               partHeader: {
-                title: 'VM'
+                title: 'All VMs'
                 subtitle: ''
               }
             }

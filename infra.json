@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.14.6.61914",
-      "templateHash": "1099474782724988807"
+      "templateHash": "3262591679052299687"
     }
   },
   "parameters": {
@@ -15,7 +15,7 @@
       "maxValue": 60,
       "minValue": 1,
       "metadata": {
-        "description": "Exection interval in minutes. Every how many minutes you want the function to evaluate the running VMs. If there are many VMs in the subscription, it might be possible the Azure Management API limit is reached; consider a high minute interval for these cases."
+        "description": "Interval of time to wait before evaluating the VMs (i.e., every how many minutes you want the function to evaluate the running VMs). If there are many VMs in the subscription, it might be possible the Azure Management API limit is reached; consider a high minute interval for these cases."
       }
     }
   },

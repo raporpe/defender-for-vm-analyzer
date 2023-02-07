@@ -1,9 +1,5 @@
 targetScope = 'subscription'
 
-
-@description('Location for all resources.')
-param location string = deployment().location
-
 @description('Exection interval in minutes. Every how many minutes you want the function to evaluate the running VMs. If there are many VMs in the subscription, it might be possible the Azure Management API limit is reached; consider a high minute interval for these cases.')
 @minValue(1)
 @maxValue(60)
@@ -16,7 +12,7 @@ var baseName = 'def-vm-analyzer-${substring(uniqueString(subscription().subscrip
 resource mainRG 'Microsoft.Resources/resourceGroups@2020-06-01' = {
 
   name: baseName
-  location: location
+  location: deployment().location
 
 }
 

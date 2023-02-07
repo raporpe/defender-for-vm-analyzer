@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.14.6.61914",
-      "templateHash": "1224280434986044854"
+      "templateHash": "11590810589601358342"
     }
   },
   "parameters": {
@@ -101,7 +101,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.14.6.61914",
-              "templateHash": "750351559173415836"
+              "templateHash": "853009967274877387"
             }
           },
           "parameters": {
@@ -330,7 +330,7 @@
                           "inputs": [
                             {
                               "name": "partTitle",
-                              "value": "Non-databricks VMs",
+                              "value": "All VMs",
                               "isOptional": true
                             },
                             {
@@ -368,7 +368,7 @@
                           "type": "Extension/HubsExtension/PartType/ArgQueryChartTile",
                           "settings": {},
                           "partHeader": {
-                            "title": "VM",
+                            "title": "All VMs",
                             "subtitle": ""
                           }
                         }

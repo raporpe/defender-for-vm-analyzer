@@ -35,7 +35,7 @@ Since the Databricks VMs are constantly being created and deleted, it is **not t
 ## How to Use
 
 1. Click the **__Deploy to Azure__** blue button in a separate window (hold the control key while clicking it).
-2. If prompted, login with your credentials that have permissions on the subscription. Select the region to deploy, do not modify the **location** field, just the **region** field. In the **Execution Interval Minutes** field leave the default value if you have less than 500 VMs. In case you have more, a 10 minute interval is recommended. This interval is important for detecting VMs that might only be running for some minutes and are billed an hour by Defender for Server.
+2. If prompted, login with your credentials that have permissions on the subscription. Select the region to deploy. In the **Execution Interval Minutes** field leave the default value if you have less than 500 VMs. In case you have more, a 10 minute interval is recommended. This interval is important for detecting VMs that might only be running for some minutes and are billed an hour by Defender for Server.
 3. All the resources are deployed to a resource group whose name starts with ```def-vm-analyzer-xxxxx```. Check if there was any error in the deployment.
 4. Check that the App Function is running by clicking on the "Functions" blade and then in ```defender-for-vm-analyzer```. Click the **Monitor** blade and wait for the function to run at least once (it runs at the start of every minute). Confirm that no exceptions are thrown.
 

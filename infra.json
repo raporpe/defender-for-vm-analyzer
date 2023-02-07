@@ -5,17 +5,10 @@
     "_generator": {
       "name": "bicep",
       "version": "0.14.6.61914",
-      "templateHash": "11590810589601358342"
+      "templateHash": "1099474782724988807"
     }
   },
   "parameters": {
-    "location": {
-      "type": "string",
-      "defaultValue": "[deployment().location]",
-      "metadata": {
-        "description": "Location for all resources."
-      }
-    },
     "executionIntervalMinutes": {
       "type": "int",
       "defaultValue": 5,
@@ -34,7 +27,7 @@
       "type": "Microsoft.Resources/resourceGroups",
       "apiVersion": "2020-06-01",
       "name": "[variables('baseName')]",
-      "location": "[parameters('location')]"
+      "location": "[deployment().location]"
     },
     {
       "type": "Microsoft.Authorization/roleDefinitions",

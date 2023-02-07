@@ -29,13 +29,14 @@ Since the Databricks VMs are constantly being created and deleted, it is **not t
 
 ## How to Use
 
-1. Click the "Deploy to Azure" blue button and follow the steps to initiate deployment.
-2. All the resources are deployed to a resource group whose name starts with ```def-vm-analyzer-xxxxx```. Check if there was any error in the deployment.
-3. Check that the Azure Function is running by clicking on the "Functions" blade and then in ```defender-for-vm-analyzer```. Click the "Monitor" blade and wait for the function to run at least once (it runs at the start of every minute). Confirm that it is running correctly by scrolling to the botton and verifying that the following log is written: "Billable Databricks VMs: X"
+1. Click the "Deploy to Azure" blue button in a separate window (hold the control key while clicking it).
+2. If prompted, login with your credentials that have permissions on the subscription. Select the region to deploy, do not modify the **location** field, just the **region** field. In the **Execution Interval Minutes** field leave the default value if you have less than 500 VMs. In case you have more, a 10 minute interval is recommended. This interval is important for detecting VMs that might only be running for some minutes and are billed an hour by Defender for Server.
+3. All the resources are deployed to a resource group whose name starts with ```def-vm-analyzer-xxxxx```. Check if there was any error in the deployment.
+4. Check that the Azure Function is running by clicking on the "Functions" blade and then in ```defender-for-vm-analyzer```. Click the **Monitor** blade and wait for the function to run at least once (it runs at the start of every minute). Confirm that no exceptions are thrown.
 
 > In case you find the error ```"Cannot read the VM status. It might be due to incorrect role assigments or permissions. Both "Microsoft.Compute/virtualMachines/read" and "Microsoft.Compute/virtualMachines/instanceView/read" are required."``` or any other permission related error, go to the subscription resource and check in the IAM blade that the managed identity "def-vm-analyzer-xxxxx-identity" has the role "def-vm-analyzer-read-vm-metadata".
 
-4. You can now go back to the resource group and look for the Log analytics workspace. Perform the following KQL query to see the current consumption:
+4. You can now go back to the resource group and look for the dashboard whose name is ```def-vm-analyzer-xxxxx-dashboard```. There you can check the results in the tile whose name is **Defender for Server cost for Databricks VMs**. This metric is in dollars and is calculated using the following query:
 
 ```sql
 let defenderForVMHourlyCost = 0.02;
@@ -47,7 +48,7 @@ let TotalHours = toscalar(AppTraces
 print TotalCost = TotalHours*defenderForVMHourlyCost
 ```
 
-This will calculate the cost of Azure Defender for VM for the Databricks VMs **for the Time Range selected at the top**. Remember that if you want to calculate the total cost for a month, the solution will have to be running for a month.
+This calculates the cost of Azure Defender for Server for the Databricks VMs **for the Time Range selected at the top**. Remember that if you want to calculate the total cost for a month, the solution will have to be running for a month.
 
 ## Contributing
 

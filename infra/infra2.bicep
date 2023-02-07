@@ -299,7 +299,7 @@ resource dashboard 'Microsoft.Portal/dashboards@2020-09-01-preview' = {
                 }
                 {
                   name: 'Query'
-                  value: 'let defenderForVMMonthlyCost = 14.6;\nlet defenderForVMHourlyCost = defenderForVMMonthlyCost / 30.0 / 24.0;\nlet TotalHours = toscalar(AppTraces \n| where Message startswith "Billable Databricks VMs: "\n| project TimeGenerated, DatabricksVMCount = extract("[0-9]+", 0, Message)\n| summarize max(DatabricksVMCount) by bin(TimeGenerated, 1h)\n| summarize TotalHours = sum(toint(max_DatabricksVMCount)));\nprint TotalCost = TotalHours*defenderForVMHourlyCost\n'
+                  value: 'let defenderForVMHourlyCost = 0.02;\nlet TotalHours = toscalar(AppTraces \n| where Message startswith "Billable Databricks VMs: "\n| project TimeGenerated, DatabricksVMCount = extract("[0-9]+", 0, Message)\n| summarize max(DatabricksVMCount) by bin(TimeGenerated, 1h)\n| summarize TotalHours = sum(toint(max_DatabricksVMCount)));\nprint TotalCost = TotalHours*defenderForVMHourlyCost\n'
                   isOptional: true
                 }
                 {

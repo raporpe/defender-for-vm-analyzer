@@ -55,6 +55,12 @@ print TotalCost = TotalHours*defenderForVMHourlyCost
 
 This calculates the cost of Azure Defender for Server for the Databricks VMs **for the Time Range selected at the top**. Remember that if you want to calculate the total cost for a month, the solution will have to be running for a month.
 
+## What is deployed?
+
+One resource group with the name ```def-vm-analyzer-xxxxx``` will be created with the following resources inside:
+![image](https://user-images.githubusercontent.com/6137860/217552526-4b8c53e4-4d84-4194-9480-e1038c6f5809.png)
+
+
 ## Contributing
 
 Do not hesitate to make a pull request or contact me at raulpo@microsoft.com

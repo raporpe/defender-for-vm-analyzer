@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.14.6.61914",
-      "templateHash": "1099474782724988807"
+      "version": "0.14.46.61228",
+      "templateHash": "4510692727465923259"
     }
   },
   "parameters": {
@@ -15,7 +15,7 @@
       "maxValue": 60,
       "minValue": 1,
       "metadata": {
-        "description": "Exection interval in minutes. Every how many minutes you want the function to evaluate the running VMs. If there are many VMs in the subscription, it might be possible the Azure Management API limit is reached; consider a high minute interval for these cases."
+        "description": "Interval of time to wait before evaluating the VMs (i.e., every how many minutes you want the function to evaluate the running VMs). If there are many VMs in the subscription, it might be possible the Azure Management API limit is reached; consider a high minute interval for these cases."
       }
     }
   },
@@ -93,8 +93,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.14.6.61914",
-              "templateHash": "853009967274877387"
+              "version": "0.14.46.61228",
+              "templateHash": "14556440389700418662"
             }
           },
           "parameters": {
@@ -223,7 +223,8 @@
                 "AZURE_CLIENT_ID": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('managedIdentityName')), '2022-01-31-preview').clientId]",
                 "DEBUG": "false",
                 "DEBUG_ANONYMOUS_IDENTITY": "[uniqueString(parameters('rg').resourceId)]",
-                "EXECUTION_INTERVAL_MINUTES": "[string(parameters('executionIntervalMinutes'))]"
+                "EXECUTION_INTERVAL_MINUTES": "[string(parameters('executionIntervalMinutes'))]",
+                "SEND_ANONYMOUS_METRICS": "true"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",

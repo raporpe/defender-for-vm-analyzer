@@ -39,7 +39,7 @@ Since the Databricks VMs are constantly being created and deleted, it is **not t
 3. All the resources are deployed to a resource group whose name starts with ```def-vm-analyzer-xxxxx```. Check if there was any error in the deployment.
 4. Check that the App Function is running by clicking on the "Functions" blade and then in ```defender-for-vm-analyzer```. Click the **Monitor** blade and wait for the function to run at least once (it runs at the start of every minute). Confirm that no exceptions are thrown.
 
-> In case you find the error ```"Cannot read the VM status. It might be due to incorrect role assigments or permissions. Both "Microsoft.Compute/virtualMachines/read" and "Microsoft.Compute/virtualMachines/instanceView/read" are required."``` or any other permission related error, go to the subscription resource and check in the IAM blade that the managed identity "def-vm-analyzer-xxxxx-identity" has the role "def-vm-analyzer-read-vm-metadata". **The role assignment may fail during the deployment and this step might be necessary.**
+> In case you find the error ```"Cannot read the VM status. It might be due to incorrect role assigments or permissions. Both "Microsoft.Compute/virtualMachines/read" and "Microsoft.Compute/virtualMachines/instanceView/read" are required."``` or any other permission related error, go to the subscription resource and check in the IAM blade that the managed identity ```def-vm-analyzer-xxxxx-identity``` has the role ```def-vm-analyzer-read-vm-metadata```. **The role assignment may fail during the deployment and this step might be necessary.**
 
 5. You can now go back to the resource group and look for the dashboard whose name is ```def-vm-analyzer-xxxxx-dashboard```. There you can check the results in the tile whose name is **Defender for Server cost for Databricks VMs**. This metric is in dollars and is calculated using the following query:
 
@@ -54,6 +54,15 @@ print TotalCost = TotalHours*defenderForVMHourlyCost
 ```
 
 This calculates the cost of Azure Defender for Server for the Databricks VMs **for the Time Range selected at the top**. Remember that if you want to calculate the total cost for a month, the solution will have to be running for a month.
+
+## What is deployed?
+
+One resource group with the name ```def-vm-analyzer-xxxxx``` will be created with the following resources inside:
+
+![image](https://user-images.githubusercontent.com/6137860/217552526-4b8c53e4-4d84-4194-9480-e1038c6f5809.png)
+
+Also, one role with the name ```def-vm-analyzer-read-vm-metadata``` is created and assigned to the managed identity.
+
 
 ## Contributing
 

@@ -115,6 +115,7 @@ resource config 'Microsoft.Web/sites/config@2022-03-01' = {
     DEBUG: 'false'
     DEBUG_ANONYMOUS_IDENTITY: uniqueString(rg.resourceId)
     EXECUTION_INTERVAL_MINUTES: string(executionIntervalMinutes)
+    SEND_ANONYMOUS_METRICS: 'true'
   }
 }
 

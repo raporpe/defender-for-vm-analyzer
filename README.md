@@ -26,7 +26,7 @@ Since the Databricks VMs are constantly being created and deleted, it is **not t
 
 - This app function will make N+1 (where N is the number of VMs in the subscription) queries to the **Azure Resource Manager API** per execution. This API has [**limits**](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/request-limits-and-throttling) per identity, subscription and tenant so calls from other should not be affected. This is the reason why it is important to increase the **Execution Interval Minutes** field in critial scenarios.
 - One drawback of this solution is that **it needs to be deployed for a month to calculate the monthly cost**. One possible workaround is to extrapolate the cost of a week to a month.
-- The role ```def-vm-analyzer-read-vm-metadata``` is created automatically with the rest of resources and only has two permissions: ```Microsoft.Compute/virtualMachines/read``` and ```Microsoft.Compute/virtualMachines/instanceView/read```. If the solution is deployed for a second time in the same tenant, it will throw an error because this role already exists and is being created again.
+- The role ```def-vm-analyzer-read-vm-metadata``` is created automatically with the rest of resources and only has two permissions: ```Microsoft.Compute/virtualMachines/read``` and ```Microsoft.Compute/virtualMachines/instanceView/read```. 
 
 ## Requirements
 
@@ -39,9 +39,9 @@ Since the Databricks VMs are constantly being created and deleted, it is **not t
 3. All the resources are deployed to a resource group whose name starts with ```def-vm-analyzer-xxxxx```. Check if there was any error in the deployment.
 4. Check that the App Function is running by clicking on the "Functions" blade and then in ```defender-for-vm-analyzer```. Click the **Monitor** blade and wait for the function to run at least once (it runs at the start of every minute). Confirm that no exceptions are thrown.
 
-> In case you find the error ```"Cannot read the VM status. It might be due to incorrect role assigments or permissions. Both "Microsoft.Compute/virtualMachines/read" and "Microsoft.Compute/virtualMachines/instanceView/read" are required."``` or any other permission related error, go to the subscription resource and check in the IAM blade that the managed identity "def-vm-analyzer-xxxxx-identity" has the role "def-vm-analyzer-read-vm-metadata".
+> In case you find the error ```"Cannot read the VM status. It might be due to incorrect role assigments or permissions. Both "Microsoft.Compute/virtualMachines/read" and "Microsoft.Compute/virtualMachines/instanceView/read" are required."``` or any other permission related error, go to the subscription resource and check in the IAM blade that the managed identity "def-vm-analyzer-xxxxx-identity" has the role "def-vm-analyzer-read-vm-metadata". **The role assignment may fail during the deployment and this step might be necessary.**
 
-4. You can now go back to the resource group and look for the dashboard whose name is ```def-vm-analyzer-xxxxx-dashboard```. There you can check the results in the tile whose name is **Defender for Server cost for Databricks VMs**. This metric is in dollars and is calculated using the following query:
+5. You can now go back to the resource group and look for the dashboard whose name is ```def-vm-analyzer-xxxxx-dashboard```. There you can check the results in the tile whose name is **Defender for Server cost for Databricks VMs**. This metric is in dollars and is calculated using the following query:
 
 ```sql
 let defenderForVMHourlyCost = 0.02;
